@@ -36,10 +36,10 @@ public class Define extends OpMode{
         /*                              Motors                          */
 
         //Sets motor names to be the same as Control Hub's configured names
-        FR = hardwareMap.dcMotor.get("FrontRightMotor");    //FR = FrontRightMotor
-        FL = hardwareMap.dcMotor.get("FrontLeftMotor");    //FL = FrontLeftMotor
-        BR = hardwareMap.dcMotor.get("backLeftMotor");    //BR = BackRightMotor
-        BL = hardwareMap.dcMotor.get("backRightMotor");    //BL = BackLeftMotor
+        FR = hardwareMap.dcMotor.get("FrontRight");    //FR = FrontRightMotor
+        FL = hardwareMap.dcMotor.get("FrontLeft");    //FL = FrontLeftMotor
+        BR = hardwareMap.dcMotor.get("backLeft");    //BR = BackRightMotor
+        BL = hardwareMap.dcMotor.get("backRight");    //BL = BackLeftMotor
 
         //Sets motor's direction
         FR.setDirection(DcMotorSimple.Direction.FORWARD);   //Sets FR Direction
