@@ -1,4 +1,5 @@
 package org.firstinspires.ftc.teamcode.Hardware;
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -7,28 +8,30 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 public class Define extends OpMode{
 
     //Motors
-    public DcMotor FR = null;  //Front Right
-    public DcMotor FL = null;  //Front Left
-    public DcMotor BR = null;  //Back Right
-    public DcMotor BL = null;  //Back Left
+    public DcMotor FR;  //Front Right
+    public DcMotor FL;  //Front Left
+    public DcMotor BR;  //Back Right
+    public DcMotor BL;  //Back Left
     /*
-    public DcMotor ? = null;  //Front Right
-    public DcMotor ? = null;  //Front Left
-    public DcMotor ? = null;  //Back Right
-    public DcMotor ? = null;  //Back Left
+    public DcMotor ?;  //Front Right
+    public DcMotor ?;  //Front Left
+    public DcMotor ?;  //Back Right
+    public DcMotor ?;  //Back Left
 
     //Servos
-    public Servo ? = null;  //
-    public Servo ? = null;  //
-    public Servo ? = null;  //
-    public Servo ? = null;  //
+    public Servo ?;  //
+    public Servo ?;  //
+    public Servo ?;  //
+    public Servo ?;  //
 
     //Control Servos
-    public CServo ? = null;  //
-    public CServo ? = null;  //
-    public CServo ? = null;  //
-    public CServo ? = null;  //
+    public CServo ?;  //
+    public CServo ?;  //
+    public CServo ?;  //
+    public CServo ?;  //
     */
+    //Sensors
+    public BNO055IMU IMU; // The IMU, generally on the hub controlling the motors
 
     @Override
     public void init() {
@@ -62,11 +65,16 @@ public class Define extends OpMode{
 
         /*                              Servos                          */
 
-
-
         /*                              CServos                          */
 
-
+        /*                              Sensors                          */
+        //IMU
+        IMU = hardwareMap.get(BNO055IMU.class, "IMU");
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.calibrationDataFile = "BNO055IMUCalibration.json";
+        IMU.initialize(parameters);
     }
 
     @Override

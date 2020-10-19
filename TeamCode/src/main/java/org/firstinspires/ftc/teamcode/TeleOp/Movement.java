@@ -2,11 +2,12 @@ package org.firstinspires.ftc.teamcode.TeleOp;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.Hardware.Define;
+import org.firstinspires.ftc.teamcode.TeleOp.Tests.IMUTest;
 
 import java.lang.reflect.Array;
 
 @TeleOp(name="Movement", group="TeleOp")
-abstract public class Movement extends Define {
+abstract public class Movement extends IMUTest {
 
     Define Arsenal = new Define();
     abstract public void init();
