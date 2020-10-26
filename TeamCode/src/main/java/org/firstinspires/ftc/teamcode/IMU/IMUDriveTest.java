@@ -1,10 +1,12 @@
 package org.firstinspires.ftc.teamcode.IMU;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 /**
  * The OnBotJava version of the blocks DriveExample.
  */
+//@Disabled
 @TeleOp(name = "IMUDriveTest", group = "TeleOP")
 public class IMUDriveTest extends IMUAMecBase {
 
@@ -32,6 +34,9 @@ public class IMUDriveTest extends IMUAMecBase {
         // This is the main run loop - which is a simple drive loop
         while (opModeIsActive()) {
             // Gamepad X is the forced exit from the program.
+            if (gamepad1.x) {
+                break;
+            }
             // This is the the real drive loop. In this loop we read/condition the control stick, then use the
             // conditioned values to set the drive speeds.
             conditionSticks();
@@ -84,14 +89,17 @@ public class IMUDriveTest extends IMUAMecBase {
      * by the IMU to maintain the robot heading.
      */
     protected void arcadeDrive() {
-            // the left X (rotation) is within the deadband - the robot is not turning. If the robot was previously turning
-            // then we reset the expected heading to the current heading and continue from there
+        // the left X (rotation) is within the deadband - the robot is not turning. If the robot was previously turning
+        // then we reset the expected heading to the current heading and continue from there
 
-            // get the heading error for use in the heading correction PID loop - we only us the P part here.
-            double max = Math.abs(conditionedRightX) + Math.abs(conditionedRightY);
-            double error = expectedHeading - heading;
-            setDrive(conditionedRightY, conditionedRightX, max * kp * error);
-            setDrive(conditionedRightX, max * kp * error, max * kp * error);
+        // get the heading error for use in the heading correction PID loop - we only us the P part here.
+        double max = Math.abs(conditionedLeftX) + Math.abs(conditionedLeftY) + Math.abs(conditionedRightX);
+        double error = expectedHeading - heading;
+        if (conditionedRightX == 0) {
+            setDrive(conditionedRightY, conditionedLeftX, max * kp * error);
+        } else {
+            setDrive(conditionedRightY, conditionedLeftX, conditionedRightX);
+        }
     }
 
     /**
