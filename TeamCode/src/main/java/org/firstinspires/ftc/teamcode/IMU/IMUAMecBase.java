@@ -99,9 +99,9 @@ public abstract class IMUAMecBase extends LinearOpMode {
         leftFrontMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftBackMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         leftBackMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightFrontMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightFrontMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         rightFrontMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightBackMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        rightBackMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         rightBackMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // This initializes the IMU for use of the gyros. NOTE: gyros precess, and the REV hub may not be perfectly

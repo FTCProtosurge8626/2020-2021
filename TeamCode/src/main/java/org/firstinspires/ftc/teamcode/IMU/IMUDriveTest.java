@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 //@Disabled
 @TeleOp(name = "IMUDriveTest", group = "TeleOP")
 public class IMUDriveTest extends IMUAMecBase {
-
+    
     @Override
     protected void postStartInitialization() {
         super.postStartInitialization();
@@ -17,7 +17,7 @@ public class IMUDriveTest extends IMUAMecBase {
         //  in the expected heading the first time there is no turn in the move commant.
         inTurn = true;
     }
-
+    
     /**
      * This function is executed when this Op Mode is selected from the Driver Station.
      */
@@ -52,7 +52,7 @@ public class IMUDriveTest extends IMUAMecBase {
             // manipulate servos and motors.
         }
     }
-
+    
     /**
      * This is tank drive for a driver sitting in the robot (i.e. the driver needs to imagine being a driver sitting in the
      * robot). The left stick controls left wheels forward and backward, the right stick controls right wheels forward and
@@ -80,7 +80,7 @@ public class IMUDriveTest extends IMUAMecBase {
         setPower(leftFrontMotorPower, leftBackMotorPower, rightFrontMotorPower, rightBackMotorPower);
         inTurn = true;
     }
-
+    
     /**
      * This is arcade drive (similar to arcade game controls) for a driver sitting in the robot (i.e. the driver needs to
      * imagine being a driver sitting in the robot). In this drive mode the right stick controls robot speed/direction and the
@@ -91,7 +91,7 @@ public class IMUDriveTest extends IMUAMecBase {
     protected void arcadeDrive() {
         // the left X (rotation) is within the deadband - the robot is not turning. If the robot was previously turning
         // then we reset the expected heading to the current heading and continue from there
-
+        
         // get the heading error for use in the heading correction PID loop - we only us the P part here.
         double max = Math.abs(conditionedLeftX) + Math.abs(conditionedLeftY) + Math.abs(conditionedRightX);
         double error = expectedHeading - heading;
@@ -101,7 +101,7 @@ public class IMUDriveTest extends IMUAMecBase {
             setDrive(conditionedRightY, conditionedLeftX, conditionedRightX);
         }
     }
-
+    
     /**
      * This is a board-relative drive; that is, a drive mode relative to the driver standing by the field rather than a driver
      * sitting inside the robot
