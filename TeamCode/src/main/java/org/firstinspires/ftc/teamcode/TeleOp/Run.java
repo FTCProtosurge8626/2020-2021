@@ -1,16 +1,15 @@
-package org.firstinspires.ftc.teamcode.TeleOp.Tests;
+package org.firstinspires.ftc.teamcode.TeleOp;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.Hardware.Define;
 import org.firstinspires.ftc.teamcode.TeleOp.Methods.Compass;
 import org.firstinspires.ftc.teamcode.TeleOp.Methods.Movement;
 
-@TeleOp(name = "IMUTest", group = "TeleOP")
-public class IMUTest extends Define {
+@TeleOp(name = "Run", group = "TeleOP")
+public class Run extends Define {
     
-    Movement Movement = new Movement();
-    Compass Compass = new Compass();
+    org.firstinspires.ftc.teamcode.TeleOp.Methods.Movement Movement = new Movement();
+    org.firstinspires.ftc.teamcode.TeleOp.Methods.Compass Compass = new Compass();
     
     @Override
     public void runOpMode() {
@@ -27,9 +26,10 @@ public class IMUTest extends Define {
 			/*boolean flyWheel = gamepad2.right_bumper;
 			boolean indegServo = gamepad2.a;
 			boolean wobbleGrabber = gamepad2.y;
-			boolean disenganger = gamepad2.b;
+			boolean disengager = gamepad2.b;
 			boolean ringScorer = gamepad2.x;*/
         
         }
     }
+    
 }
