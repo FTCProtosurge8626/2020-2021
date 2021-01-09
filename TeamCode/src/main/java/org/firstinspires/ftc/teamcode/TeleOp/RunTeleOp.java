@@ -1,6 +1,7 @@
-package org.firstinspires.ftc.teamcode.Hardware;
+package org.firstinspires.ftc.teamcode.TeleOp;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -11,13 +12,16 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-public abstract class Define extends LinearOpMode {
+import org.firstinspires.ftc.teamcode.TeleOp.Methods.Compass;
+import org.firstinspires.ftc.teamcode.TeleOp.Methods.Movement;
+@TeleOp(name = "Run: TeleOP", group = "TeleOP")
+public class RunTeleOp extends LinearOpMode {
     
     //Motors
-    public static DcMotor FL;  //Front Left
-    public static DcMotor FR;  //Front Right
-    public static DcMotor BL;  //Back Left
-    public static DcMotor BR;  //Back Right
+    public DcMotor FL;  //Front Left
+    public DcMotor FR;  //Front Right
+    public DcMotor BL;  //Back Left
+    public DcMotor BR;  //Back Right
     
     
     //public DcMotor LeftShooter;  //Front Left
@@ -42,18 +46,14 @@ public abstract class Define extends LinearOpMode {
     
     public BNO055IMU IMU;	//	The	IMU, generally on the hub controlling the motors
     
-    public double heading = heading();
-    public double target = heading();
-    public double power = (heading - target) * .02;
+    public double heading;
+    public double target;
+    public double power;
     
     public Orientation angles;
     
-    protected void initVariable() {
-        Orientation angles;
-        angles = IMU.getAngularOrientation();
-    }
     
-    protected void initHardware() {
+    public void runOpMode() {
         
         //Sets motor names to be the same as Control Hub's configured names
         FL = hardwareMap.dcMotor.get("FrontLeft");	//FL = FrontLeftMotor
@@ -90,15 +90,59 @@ public abstract class Define extends LinearOpMode {
         parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
         parameters.calibrationDataFile = "BNO055IMUCalibration.json";
         IMU.initialize(parameters);
+        
+        target = heading();
+        
+        while(opModeIsActive())
+        {Movement.movement(1,1,1);
+            telemetry.addData("Heading: ", heading);
+            telemetry.addData("Target: ", target);
+            telemetry.addData("Power: ", power);
+            telemetry.update();
+            compass(gamepad1.dpad_up, gamepad1.dpad_down, gamepad1.dpad_right, gamepad1.dpad_left);
+            movement(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+        }
     }
     
-    protected void movementPower(double FLPower, double FRPower, double BLPower, double BRPower) {
+    private void movement(double forward, double horizontal, double rotation){
+        
+        double max = Math.abs(forward) + Math.abs(horizontal) + Math.abs(rotation);
+        
+        double FLPower = (forward - horizontal - rotation);
+        double FRPower = ((forward + horizontal) + rotation);
+        double BLPower = ((-forward + horizontal) - rotation);
+        double BRPower = ((-forward - horizontal) + rotation);
+        
+        movementPower(FLPower, FRPower, BLPower, BRPower);
+    }
+    
+    public void compass(boolean north, boolean south, boolean east, boolean west)
+    {
+        if (north) target = 0;
+        if (south) target = 180;
+        if (east) target =  -90;
+        if (west) target = 90;
+        if(north || south || east || west)
+            heading = heading();
+        power = (heading - target) * .02;
+        while (power > 0.25 || power < -0.25)
+        {
+            heading = heading();
+            power = (heading - target) * .02;
+            movement(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+            movement(0, 0, power);
+            //if (north || south || east || west) break;
+            telemetry.update();
+        }
+    }
+    
+    public void movementPower(double FLPower, double FRPower, double BLPower, double BRPower) {
         FL.setPower(FLPower);
         FR.setPower(FRPower);
         BL.setPower(BLPower);
         BR.setPower(BRPower);
     }
-    protected double heading() {
+    public double heading() {
         
         angles = IMU.getAngularOrientation();
         return angles.firstAngle;
