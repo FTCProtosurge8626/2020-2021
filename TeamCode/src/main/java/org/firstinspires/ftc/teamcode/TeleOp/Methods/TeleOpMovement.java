@@ -9,7 +9,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 @TeleOp(name = "Run: Movement", group = "Run")
-public class Movement extends Define {
+public class TeleOpMovement extends Define {
     
     double power;
     
@@ -28,7 +28,7 @@ public class Movement extends Define {
 		}*/
     }
     
-    public static void movement(double forward, double horizontal, double rotation){
+    public void movement(double forward, double horizontal, double rotation){
         
         double max = Math.abs(forward) + Math.abs(horizontal) + Math.abs(rotation);
         

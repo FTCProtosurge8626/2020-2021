@@ -1,25 +1,18 @@
 package org.firstinspires.ftc.teamcode.Autonomous.Methods;
 
-import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
-import java.lang.annotation.Target;
+import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import org.firstinspires.ftc.teamcode.Hardware.Define;
 import java.util.List;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.hardware.bosch.BNO055IMU;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.util.ElapsedTime;
-import org.firstinspires.ftc.teamcode.Hardware.Define;
-
-@Autonomous(name = "Movement", group = "Autonomous")
-public class Movement extends Define {
+@Autonomous(name="Run: OldMovement", group="Run")
+public class OldMovement extends Define {
     
     private static final String TFOD_MODEL_ASSET = "Skystone.tflite";
     private static final String LABEL_FIRST_ELEMENT = "Quad";
@@ -30,10 +23,7 @@ public class Movement extends Define {
     
     String rings = "None";
     
-    private double power;
-    
     private ElapsedTime	 runtime = new ElapsedTime();
-    private double detectionTime = 5;
     
     static final double	 COUNTS_PER_MOTOR_REV	= 1440 ;	// eg: TETRIX Motor Encoder
     static final double	 DRIVE_GEAR_REDUCTION	= 2.0 ;	 // This is < 1.0 if geared UP
@@ -44,8 +34,11 @@ public class Movement extends Define {
         
         initHardware();
         initVariable();
+        
         initVuforia();
         initTfod();
+        
+        target = heading();
         
         if (tfod != null) {
             tfod.activate();
@@ -53,7 +46,7 @@ public class Movement extends Define {
         
         waitForStart();
         
-        while (rings == "None" || detectionTime <= 5) {
+        while (rings == "None") {
             if (tfod != null) {
                 
                 List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
@@ -68,20 +61,20 @@ public class Movement extends Define {
                 telemetry.addData("Single", rings);
                 telemetry.update();
                 
-                encoderDrive(0, 1, 0, 1, 1);
+                Movement(10, 0, 0, 1, 1);
                 
             } else if (rings == "Quad") {
                 telemetry.addData("Quad", rings);
                 telemetry.update();
                 
                 
-                encoderDrive(0, -1, 0, 1, 1);
+                Movement(0, 10, 0, 1, 1);
             }else if (rings == "None") {
                 telemetry.addData("None", rings);
                 telemetry.update();
                 
                 
-                encoderDrive(1, 0, 0, 1, 1);
+                Movement(0, 0, 10, 1, 1);
             }
         }
         
@@ -91,21 +84,18 @@ public class Movement extends Define {
         
     }
     
-    public void encoderDrive(double forward, double horizontal, double rotation, double speed, double timeout) {
-        
+    public void Movement(
+        double forward, double horizontal, double rotation,
+        double speed, double timeout) {
         int FLTarget;
         int FRTarget;
         int BLTarget;
         int BRTarget;
         
-        target = heading();
-        updateHeading();
-        
-        if(opModeIsActive()) {
-            //while (power > 0.25 || power < -0.25)
-            //{
-            updateHeading();
-            //Determine new target position, and pass to motor controller
+        // Ensure that the opmode is still active
+        if (opModeIsActive()) {
+            
+            // Determine new target position, and pass to motor controller
             FLTarget = FL.getCurrentPosition() + (int)((forward + horizontal - rotation) * COUNTS_PER_INCH);
             FRTarget = FR.getCurrentPosition() + (int)(((forward - horizontal) + rotation) * COUNTS_PER_INCH);
             BLTarget = BL.getCurrentPosition() + (int)(((-forward - horizontal) - rotation) * COUNTS_PER_INCH);
@@ -121,6 +111,7 @@ public class Movement extends Define {
             FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            
             // reset the timeout time and start motion.
             runtime.reset();
             FL.setPower(Math.abs(speed));
@@ -136,21 +127,19 @@ public class Movement extends Define {
             // onto the next step, use (isBusy() || isBusy()) in the loop test.
             while (opModeIsActive() &&
                 (runtime.seconds() < timeout) &&
-                (FL.isBusy() && FR.isBusy()) && BL.isBusy() && BR.isBusy()) {
+                (FL.isBusy() && FR.isBusy() && BL.isBusy() && BR.isBusy())) {
+                
                 // Display it for the driver.
-                // * (power * .02)
-                updateHeading();
-                telemetry.addData("Path1",  "Running to %7d :%7d", FLTarget,  FRTarget, BLTarget,  BRTarget);
+                telemetry.addData("Path1",  "Running to %7d :%7d",
+                    FLTarget,  FRTarget,
+                    BLTarget,  BRTarget);
+                
                 telemetry.addData("Path2",  "Running at %7d :%7d",
-                    FL.getCurrentPosition(),
-                    FR.getCurrentPosition(),
-                    BL.getCurrentPosition(),
-                    BR.getCurrentPosition());
-                telemetry.addData("Power: ", power);
-                telemetry.addData("Target: ", target);
-                telemetry.addData("Speed: ", Math.abs(speed) * (power * .02));
+                    FL.getCurrentPosition(), FR.getCurrentPosition(),
+                    BL.getCurrentPosition(), BR.getCurrentPosition());
                 telemetry.update();
             }
+            
             // Stop all motion;
             FL.setPower(0);
             FR.setPower(0);
@@ -163,15 +152,9 @@ public class Movement extends Define {
             BL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             BR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             
-            target = heading();
-            
-            //  sleep(250);   // optional pause after each move
+            sleep((int)timeout*1000);   // optional pause after each move
         }
     }
-    public void servoMove(double position, double power, double sleep) {
-    
-    }
-    
     private void initVuforia() {
         
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
@@ -195,22 +178,15 @@ public class Movement extends Define {
             LABEL_FIRST_ELEMENT,
             LABEL_SECOND_ELEMENT);
     }
-    
-    public void updateHeading()
-    {
-        heading = heading();
-        power = heading - target * .05;
-    }
-    public double heading() {
-        
-        angles = IMU.getAngularOrientation();
-        return angles.firstAngle;
-    }
-    
-    public void movementPower(double FLPower, double FRPower, double BLPower, double BRPower) {
+    protected void movementPower(double FLPower, double FRPower, double BLPower, double BRPower) {
         FL.setPower(FLPower);
         FR.setPower(FRPower);
         BL.setPower(BLPower);
         BR.setPower(BRPower);
+    }
+    protected double heading() {
+        
+        angles = IMU.getAngularOrientation();
+        return angles.firstAngle;
     }
 }
