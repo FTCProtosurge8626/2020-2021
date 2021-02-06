@@ -20,62 +20,49 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 public abstract class Define extends LinearOpMode {
     
-    //Motors
-    public DcMotor FL;  //Front Left
-    public DcMotor FR;  //Front Right
-    public DcMotor BL;  //Back Left
-    public DcMotor BR;  //Back Right
+    //Movement Motors
+    public DcMotor FL;  //Front Left Wheel
+    public DcMotor FR;  //Front Right Wheel
+    public DcMotor BL;  //Back Left Wheel
+    public DcMotor BR;  //Back Right Wheel
     
+    //Ring Shooter
+    public DcMotor LeftS;  //Left Ring Shooter
+    public DcMotor RightS;  //Right Ring Shooter
     
-    //public DcMotor LeftShooter;  //Front Left
-    //public DcMotor RightShooter;  //Front Left
-	/*public DcMotor ?;  //Front Right
-	public DcMotor ?;  //Back Left
-	public DcMotor ?;  //Back Right
-	
-	//Servos
-	*/public Servo LockShooter;  //
-	/*public Servo ?;  //
-	public Servo ?;  //
-	public Servo ?;  //
-	
-	//Control Servos
-	public CServo ?;  //
-	public CServo ?;  //
-	public CServo ?;  //
-	public CServo ?;  //
-	*/
-    //Sensors
+    //Robot Intake
+    public DcMotor Intake;  //Intake System
     
-    public NormalizedColorSensor colorSensor;
-    public View relativeLayout;
+    //Wobble Goal Grabber
+    public DcMotor WobbleA;  //Wobble Goal Grabber Arm
+    public Servo WobbleC;  //Wobble Goal Grabber Clamp
+    public Servo WobbleL;  //Wobble Goal Grabber Lock
     
-    public BNO055IMU IMU;	//	The	IMU, generally on the hub controlling the motors
-    
-    public double heading;
-    public double target;
-    public double moveTarget;
-    
-    public Orientation angles;
-    
+    //Encoder Variables
     public static final double	 COUNTS_PER_MOTOR_REV	= 1440 ;	// eg: TETRIX Motor Encoder
     public static final double	 DRIVE_GEAR_REDUCTION	= 2.0 ;	 // This is < 1.0 if geared UP
     public static final double	 WHEEL_DIAMETER_INCHES   = 4.0 ;	 // For figuring circumference
     public static final double	 COUNTS_PER_INCH		 = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.1415);
     
+    //Rev IMU
+    public BNO055IMU IMU;	//	The	IMU, generally on the hub controlling the motors
     
-    // values is a reference to the hsvValues array.
-    public float[] hsvValues = new float[3];
-    public final float values[] = hsvValues;
+    //IMU Variables
+    public double target;
+    public double turn;
     
-    // bPrevState and bCurrState keep track of the previous and current state of the button
-    public boolean bPrevState = false;
-    public boolean bCurrState = false;
+    public Orientation angles;
     
-    protected void initVariable() {
+    public ColorSensor ColorS;	// Hardware Device Object
+    
+    //Camrea Variables
+    public boolean detection = false;
+    
+    protected void initVariables() {
+        target = 0;
+        turn = 0;
         
-        heading = heading();
-        
+        detection = false;
     }
     
     protected void initHardware() {
@@ -86,37 +73,39 @@ public abstract class Define extends LinearOpMode {
         BL = hardwareMap.dcMotor.get("BackRight");	//BL = BackLeftMotor
         BR = hardwareMap.dcMotor.get("BackLeft");	//BR = BackRightMotor
         
-        
-        
-        IMU = hardwareMap.get(BNO055IMU.class, "IMU");
-        
         //Sets motor's direction
-        FL.setDirection(DcMotorSimple.Direction.FORWARD);   //Sets FL Direction
-        FR.setDirection(DcMotorSimple.Direction.REVERSE);   //Sets FR Direction
-        BL.setDirection(DcMotorSimple.Direction.FORWARD);   //Sets BL Direction
-        BR.setDirection(DcMotorSimple.Direction.REVERSE);   //Sets BR Direction
+        FL.setDirection(DcMotorSimple.Direction.REVERSE);   //Sets FrontLeftMotor's Direction
+        FR.setDirection(DcMotorSimple.Direction.FORWARD);   //Sets FrontRightMotor's Direction
+        BL.setDirection(DcMotorSimple.Direction.FORWARD);   //Sets BackLeftMotor's Direction
+        BR.setDirection(DcMotorSimple.Direction.REVERSE);   //Sets BackRightMotor's Direction
         
-        //LeftShooter.setDirection(DcMotorSimple.Direction.FORWARD);   //Sets BL Direction
-        //RightShooter.setDirection(DcMotorSimple.Direction.REVERSE);   //Sets BR Direction
+        FL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        FR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        BL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        BR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+		/*
+		LeftS = hardwareMap.dcMotor.get("LeftShooter");		//LS = LeftShooter
+		RightS = hardwareMap.dcMotor.get("RightShooter");	//RS = RightShooter
+		
+		LeftS.setDirection(DcMotorSimple.Direction.FORWARD);	//Sets LeftShooter's Direction
+		RightS.setDirection(DcMotorSimple.Direction.FORWARD);	//Sets RightShooter's Direction
+		
+		Intake = hardwareMap.dcMotor.get("Intake");		//Intake = Intake
+		
+		Intake.setDirection(DcMotorSimple.Direction.FORWARD);	//Sets Intake's Direction
+		
+		WobbleA = hardwareMap.dcMotor.get("WobbleArm");	//WobbleA = WobbleArm
+		WobbleC = hardwareMap.servo.get("WobbleClamp");	//WobbleC = WobbleClamp
+		WobbleL = hardwareMap.servo.get("WobbleLock");	//WobbleL = WobbleLock
+		
+		WobbleA.setDirection(DcMotorSimple.Direction.FORWARD);	//Sets WobbleArm's Direction
+		
+		WobbleC.setPosition(0);
+		WobbleL.setPosition(0);
+		*/
+        IMU = hardwareMap.get(BNO055IMU.class, "IMU"); //IMU = IMU
         
-        FL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        FR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        
-        //Turn on
-        FL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        FR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        BL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        BR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        
-        //LeftShooter = hardwareMap.dcMotor.get("LeftShooter");	//Shooter = BackRightMotor
-        //RightShooter = hardwareMap.dcMotor.get("RightShooter");	//Shooter = BackRightMotor
-        
-        LockShooter = hardwareMap.servo.get("LockShooter");	//Shooter = BackRightMotor
-        
-        colorSensor = hardwareMap.get(NormalizedColorSensor.class, "csense");
-        
+        //Initializes IMU
         BNO055IMU.Parameters parameters;
         parameters = new BNO055IMU.Parameters();
         
@@ -124,17 +113,60 @@ public abstract class Define extends LinearOpMode {
         parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
         parameters.calibrationDataFile = "BNO055IMUCalibration.json";
         IMU.initialize(parameters);
+        
+        // get a reference to our ColorSensor object.
+        ColorS = hardwareMap.get(ColorSensor.class, "LineDetector");
+        
+        // hsvValues is an array that will hold the hue, saturation, and value information.
+        float hsvValues[] = {0F,0F,0F};
+        
+        // values is a reference to the hsvValues array.
+        final float values[] = hsvValues;
+        
+        // get a reference to the RelativeLayout so we can change the background
+        // color of the Robot Controller app to match the hue detected by the RGB sensor.
+        int relativeLayoutId = hardwareMap.appContext.getResources().getIdentifier("RelativeLayout", "id", hardwareMap.appContext.getPackageName());
+        final View relativeLayout = ((Activity) hardwareMap.appContext).findViewById(relativeLayoutId);
+        
+        // bLedOn represents the state of the LED.
+        boolean bLedOn = true;
+        
+        // Set the LED in the beginning
+        ColorS.enableLed(bLedOn);
+        
+        // convert the RGB values to HSV values.
+        Color.RGBToHSV(ColorS.red() * 8, ColorS.green() * 8, ColorS.blue() * 8, hsvValues);
     }
     
-    protected void movementPower(double FLPower, double FRPower, double BLPower, double BRPower) {
-        FL.setPower(FLPower);
-        FR.setPower(FRPower);
-        BL.setPower(BLPower);
-        BR.setPower(BRPower);
+    protected void runToPosition() {
+        // Turn On RUN_TO_POSITION
+        FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
-    protected double heading() {
+    
+    protected void runEncoders() {
+        //Sets motors to run with encoders
+        FL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);	//Resets FrontLeftMotor's encoder
+        FR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);	//Resets FrontRightMotor's encoder
+        BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);	//Resets BackLeftMotor's encoder
+        BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);	//Resets BackRightMotor's encoder
         
-        angles = IMU.getAngularOrientation();
-        return angles.firstAngle;
+        //Turns on the wheels' encoders
+        FL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);	//Sets FrontLeftMotor to run with encoder
+        FR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);	//Sets FrontRightMotor to run with encoder
+        BL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);	//Sets BackLeftMotor to run with encoder
+        BR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);	//Sets BackRightMotor to run with encoder
+    }
+    
+    protected void runWithoutEncoders() {
+        
+        //Turns on the wheels' encoders
+        FL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);	//Sets FrontLeftMotor to run with encoder
+        FR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);	//Sets FrontRightMotor to run with encoder
+        BL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);	//Sets BackLeftMotor to run with encoder
+        BR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);	//Sets BackRightMotor to run with encoder
+        
     }
 }

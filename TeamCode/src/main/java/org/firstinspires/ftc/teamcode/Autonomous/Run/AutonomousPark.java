@@ -1,15 +1,9 @@
 package org.firstinspires.ftc.teamcode.Autonomous.Run;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
-import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.teamcode.Hardware.Define;
-import java.util.List;
 
 @Autonomous(name="Run: AutonomousPark", group="Run")
 public class AutonomousPark extends Define {
@@ -24,7 +18,7 @@ public class AutonomousPark extends Define {
     public void runOpMode() {
         
         initHardware();
-        initVariable();
+        initVariables();
         
         target = heading();
         

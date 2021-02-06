@@ -1,102 +1,169 @@
 package org.firstinspires.ftc.teamcode.Autonomous.Run;
 
-import org.firstinspires.ftc.teamcode.Hardware.Define;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.hardware.SwitchableLight;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.NormalizedRGBA;
-import android.app.Activity;
-import android.graphics.Color;
-import android.view.View;
+import org.firstinspires.ftc.teamcode.Hardware.Define;
 import java.util.List;
 
-@Autonomous(name="Run: RunAutonomous", group="Run")
+@Autonomous(name="Run: Autonomous", group="Run")
 public class RunAutonomous extends Define {
     
-    double turn;
+    private static final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
+    private static final String LABEL_FIRST_ELEMENT = "Quad";
+    private static final String LABEL_SECOND_ELEMENT = "Single";
+    private static final String VUFORIA_KEY = "AUH3W7//////AAABmRPeTi20x0n1vDw0WNnEaB85+/2MLZ8wvrAecldHMZYx0zw8T/JNFB7k8UfpsZGqwPNVgsWRHKlPk29EFCNgAZo9e+aqmobPLwzHEr5dm1EdFPQizLMKES9UdOSIdNb/Sx2cO8oI5iURlnGtF267JIi+oqlYZawFr0ERoqA9lmlRZpE4ak83vkqYn+2iFHXJoBvxZCvOu2O6toN7tO5LhnItem0I4iFrQNw9378YiVyIP4I7nE5XtlYHKmhiBdyTXkGyvXTUUI/lzpQVxU0Z9ynL0c4t09v54i/qQ1racrZG1CrrVMLVT8m7+L8+0dUu3Zv7zLl/G3MpvnufDs2KoA5VRjta0gnmVJoUME2npfZW";
+    private VuforiaLocalizer vuforia;
+    private TFObjectDetector tfod;
     
-    private ElapsedTime	 runtime = new ElapsedTime();
+    private String rings = "None";
+    
+    private ElapsedTime	 currentPos = new ElapsedTime();
+    private ElapsedTime	 detectionTime = new ElapsedTime();
+    private ElapsedTime	 headingTime = new ElapsedTime();
+    
+    static final double	 COUNTS_PER_MOTOR_REV	= 1440 ;	// eg: TETRIX Motor Encoder
+    static final double	 DRIVE_GEAR_REDUCTION	= 2.0 ;	 // This is < 1.0 if geared UP
+    static final double	 WHEEL_DIAMETER_INCHES   = 4.0 ;	 // For figuring circumference
+    static final double	 COUNTS_PER_INCH		 = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.1415);
     
     public void runOpMode() {
         
         initHardware();
-        initVariable();
+        initVariables();
+        runEncoders();
         
-        int relativeLayoutId = hardwareMap.appContext.getResources().getIdentifier("RelativeLayout", "id", hardwareMap.appContext.getPackageName());
-        relativeLayout = ((Activity) hardwareMap.appContext).findViewById(relativeLayoutId);
+        initVuforia();
+        initTfod();
         
-        relativeLayout.post(new Runnable() {
-            public void run() {
-                relativeLayout.setBackgroundColor(Color.WHITE);
-            }
-        });
+        target = heading();
         
-        if (colorSensor instanceof SwitchableLight) {
-            ((SwitchableLight)colorSensor).enableLight(true);
+        if (tfod != null) {
+            tfod.activate();
+            tfod.setZoom(2.5, 16.0/9.0);
         }
         
-        
-        // wait for the start button to be pressed.
         waitForStart();
         
-        // check for button state transitions.
-        if (opModeIsActive())  {
-            
-            target = heading();
-            
-            waitForStart();
-            
-            Movement(0,-20,0,1,1);
-            
-            Movement(100,0,0,1,1.25);
-            
+        detectionTime.reset();
+        
+        while (rings == "None" && detectionTime.seconds() < 1.5 && !isStopRequested()) {
+            if (tfod != null) {
+                // getUpdatedRecognitions() will return null if no new information is available since
+                // the last time that call was made.
+                List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+                
+                if (updatedRecognitions != null) {
+                    //telemetry.addData("# Object Detected", updatedRecognitions.size());
+                    // step through the list of recognitions and display boundary info.
+                    int i = 0;
+                    
+                    for (Recognition recognition : updatedRecognitions) {
+						/*
+						telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
+						telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
+								recognition.getLeft(), recognition.getTop());
+						telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
+								recognition.getRight(), recognition.getBottom());*/
+                        rings = recognition.getLabel();
+                    }
+                    //telemetry.update();
+                }
+            }
         }
+        if(opModeIsActive()){
+            if(rings == "None") {
+                
+                telemetry.addData("Placement: ", "A");
+                telemetry.update();
+                
+                //A
+                movement(0,-1,0,1.25);
+                
+                movement(1,0,90,1.5);
+                
+                movement(-1,0,90,.75);
+                
+                movement(0,1,90,.65);
+                
+                movement(0,0,0,0);
+                
+            } else if (rings == "Single") {
+                
+                telemetry.addData("Placement: ", "B");
+                telemetry.update();
+                
+                //B
+                movement(0,-1,0,1.25);
+                
+                movement(0,1,0,.1);
+                
+                movement(1,0,0,2.4);
+                
+                movement(0,1,0,.25);
+                
+                movement(-1,0,0,.65);
+                
+            }else if (rings == "Quad") {
+                
+                telemetry.addData("Placement: ", "C");
+                telemetry.update();
+                
+                //C
+                movement(0,-1,0,1.25);
+                
+                movement(0,1,0,.1);
+                
+                movement(1,0,90,2.65);
+                
+                movement(1,0,90,.25);
+                
+                movement(0,-1,90,1.3);
+                
+                movement(0,0,0,0);
+            }
+        }
+        
+        if (tfod != null) {
+            tfod.shutdown();
+        }
+        
     }
     
-    public void Movement(
-        double forward, double horizontal, double rotation,
-        double speed, double timeout) {
+    private void movement(double forward, double horizontal, double direction, double targetPos) {
         int FLTarget;
         int FRTarget;
         int BLTarget;
         int BRTarget;
-        
         // Ensure that the opmode is still active
         if (opModeIsActive()) {
-            
-            heading = heading();
-            turn = (heading - target) * .02;
+            //compass(direction);
             
             // Determine new target position, and pass to motor controller
-			/*
-			FLTarget = (int)(FL.getCurrentPosition() + (int)((forward + horizontal - rotation) * COUNTS_PER_INCH) * - turn);
-			FRTarget = (int)(FR.getCurrentPosition() + (int)(((forward - horizontal) + rotation) * COUNTS_PER_INCH) * + turn);
-			BLTarget = (int)(BL.getCurrentPosition() + (int)(((-forward - horizontal) - rotation) * COUNTS_PER_INCH) * - turn);
-			BRTarget = (int)(BR.getCurrentPosition() + (int)(((-forward + horizontal) + rotation) * COUNTS_PER_INCH) * + turn);
-			*/
-            FLTarget = (int)(FL.getCurrentPosition() + (int)((forward + horizontal - rotation) * COUNTS_PER_INCH));
-            FRTarget = (int)(FR.getCurrentPosition() + (int)(((forward - horizontal) + rotation) * COUNTS_PER_INCH));
-            BLTarget = (int)(BL.getCurrentPosition() + (int)(((-forward - horizontal) - rotation) * COUNTS_PER_INCH));
-            BRTarget = (int)(BR.getCurrentPosition() + (int)(((-forward + horizontal) + rotation) * COUNTS_PER_INCH));
+            FLTarget = (int)(FL.getCurrentPosition() + (int)-(forward + horizontal) * COUNTS_PER_INCH);
+            FRTarget = (int)(FR.getCurrentPosition() + (int)-(forward - horizontal) * COUNTS_PER_INCH);
+            BLTarget = (int)(BL.getCurrentPosition() + (int)-(forward + horizontal) * COUNTS_PER_INCH);
+            BRTarget = (int)(BR.getCurrentPosition() + (int)-(forward - horizontal) * COUNTS_PER_INCH);
             
             FL.setTargetPosition(FLTarget);
             FR.setTargetPosition(FRTarget);
             BL.setTargetPosition(BLTarget);
             BR.setTargetPosition(BRTarget);
             
-            // Turn On RUN_TO_POSITION
-            FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            runToPosition();
             
             // reset the timeout time and start motion.
-            runtime.reset();
-            FL.setPower(speed);
-            FR.setPower(speed);
-            BL.setPower(speed);
-            BR.setPower(speed);
+            currentPos.reset();
+            FL.setPower(1);
+            FR.setPower(1);
+            BL.setPower(1);
+            BR.setPower(1);
 			/*
 			FL.setPower(-power);
 			FR.setPower(power);
@@ -110,50 +177,120 @@ public class RunAutonomous extends Define {
             // always end the motion as soon as possible.
             // However, if you require that BOTH motors have finished their moves before the robot continues
             // onto the next step, use (isBusy() || isBusy()) in the loop test.
-            while (opModeIsActive() &&
-                (runtime.seconds() < timeout) &&
-                (FL.isBusy() && FR.isBusy() && BL.isBusy() && BR.isBusy())) {
-                
-                // Display it for the driver.
-                telemetry.addData("Path1",  "Running to %7d :%7d",
-                    FLTarget,  FRTarget,
-                    BLTarget,  BRTarget);
-                
-                telemetry.addData("Path2",  "Running at %7d :%7d",
-                    FL.getCurrentPosition(), FR.getCurrentPosition(),
-                    BL.getCurrentPosition(), BR.getCurrentPosition());
-                telemetry.update();
-                
-                heading = heading();
-                turn = (heading - target) * .02;
-                
-                
-                NormalizedRGBA colors = colorSensor.getNormalizedColors();
-                
-                if(colors.alpha <= 19 && colors.alpha >= 25);
-                break;
-				
-				/*
-				FL.setPower(turn);
-				FR.setPower(-turn);
-				BL.setPower(turn);
-				BR.setPower(-turn);*/
+            while ((opModeIsActive() && currentPos.seconds() < targetPos &&
+                (FL.isBusy() && FR.isBusy() && BL.isBusy() && BR.isBusy())) && !isStopRequested()) {
+					/*
+					// Display it for the driver.
+					telemetry.addData("Path1",  "Running to %7d :%7d",
+					FLTarget,  FRTarget,
+					BLTarget,  BRTarget);
+					
+					telemetry.addData("Path2",  "Running at %7d :%7d",
+					FL.getCurrentPosition(), FR.getCurrentPosition(),
+					BL.getCurrentPosition(), BR.getCurrentPosition());
+					
+					telemetry.addData("Turn: ", turn);
+					telemetry.update();
+					*/
             }
             
             // Stop all motion;
-            FL.setPower(0);
-            FR.setPower(0);
-            BL.setPower(0);
-            BR.setPower(0);
+            movementPower(0, 0, 0, 0);
             
             // Turn off RUN_TO_POSITION
-            FL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            FR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            BL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            BR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            runWithoutEncoders();
             
-            sleep((int)timeout*1000);   // optional pause after each move
+            compass(direction);
+            sleep(500);   // optional pause after each move
         }
+    }
+    
+    private void compass(double angle) {
+        target = angle;
+        correctHeading();
+        headingTime.reset();
+        while (((turn > 0.06 || turn < -0.06) && headingTime.seconds() < 2) && !isStopRequested())
+        {
+            correctHeading();
+            movementPower(-turn, turn, turn, -turn);
+            
+            telemetry.addData("Turn: ", turn);
+            telemetry.update();
+            //if (turn > 0.5 || turn < -0.5) break;
+        }
+        movementPower(0,0,0,0);
+        target = heading();
+    }
+    
+    public void correctHeading() {
+        turn = (target - heading()) * .02;
+    }
+    
+    private void intakeUp(int sleep) {
+        Intake.setPower(1);
+        sleep(sleep);
+        Intake.setPower(0);
+    }
+    
+    private void intakeDown(int sleep) {
+        Intake.setPower(-1);
+        sleep(sleep);
+        Intake.setPower(0);
+    }
+    
+    private void armUp(int sleep) {
+        WobbleA.setPower(1);
+        sleep(sleep);
+        WobbleA.setPower(0);
+    }
+    
+    private void armDown(int sleep) {
+        WobbleA.setPower(-1);
+        sleep(sleep);
+        WobbleA.setPower(0);
+    }
+    
+    private void clampUp() {
+        WobbleC.setPosition(1);
+    }
+    
+    private void clampDown() {
+        WobbleC.setPosition(0);
+    }
+    
+    private void LockUp() {
+        WobbleL.setPosition(1);
+    }
+    
+    private void lockDown() {
+        WobbleL.setPosition(0);
+    }
+    
+    private void initVuforia() {
+        /*
+         * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
+         */
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
+        
+        parameters.vuforiaLicenseKey = VUFORIA_KEY;
+        parameters.cameraName = hardwareMap.get(WebcamName.class, "RingCam");
+        
+        //  Instantiate the Vuforia engine
+        vuforia = ClassFactory.getInstance().createVuforia(parameters);
+        
+        // Loading trackables is not necessary for the TensorFlow Object Detection engine.
+    }
+    
+    /**
+     * Initialize the TensorFlow Object Detection engine.
+     */
+    private void initTfod() {
+        int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
+            "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
+        tfodParameters.minResultConfidence = 0.8f;
+        tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
+        tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT);
     }
     
     protected void movementPower(double FLPower, double FRPower, double BLPower, double BRPower) {
@@ -162,6 +299,12 @@ public class RunAutonomous extends Define {
         BL.setPower(BLPower);
         BR.setPower(BRPower);
     }
+    
+    public void shootPower(double RightSPower, double LeftSPower) {
+        LeftS.setPower(RightSPower);
+        RightS.setPower(LeftSPower);
+    }
+    
     protected double heading() {
         
         angles = IMU.getAngularOrientation();

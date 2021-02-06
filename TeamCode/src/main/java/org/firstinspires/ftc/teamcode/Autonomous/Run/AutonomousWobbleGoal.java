@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.Autonomous.Run;
 
 import org.firstinspires.ftc.teamcode.Hardware.Define;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.hardware.SwitchableLight;
@@ -9,8 +9,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import android.app.Activity;
 import android.graphics.Color;
-import android.view.View;
-import java.util.List;
 
 @Autonomous(name="Run: AutonomousWobbleGoal", group="Run")
 public class AutonomousWobbleGoal extends Define {
@@ -23,7 +21,7 @@ public class AutonomousWobbleGoal extends Define {
     public void runOpMode() {
         
         initHardware();
-        initVariable();
+        initVariables();
         
         int relativeLayoutId = hardwareMap.appContext.getResources().getIdentifier("RelativeLayout", "id", hardwareMap.appContext.getPackageName());
         relativeLayout = ((Activity) hardwareMap.appContext).findViewById(relativeLayoutId);
@@ -34,8 +32,8 @@ public class AutonomousWobbleGoal extends Define {
             }
         });
         
-        if (colorSensor instanceof SwitchableLight) {
-            ((SwitchableLight)colorSensor).enableLight(true);
+        if (ColorS instanceof SwitchableLight) {
+            ((SwitchableLight) ColorS).enableLight(true);
         }
         
         
@@ -117,7 +115,7 @@ public class AutonomousWobbleGoal extends Define {
                 (runtime.seconds() < timeout) &&
                 (FL.isBusy() && FR.isBusy() && BL.isBusy() && BR.isBusy())) {
                 
-                NormalizedRGBA colors = colorSensor.getNormalizedColors();
+                NormalizedRGBA colors = ColorS.getNormalizedColors();
                 
                 telemetry.addLine().addData("alpha", "%.3f", colors.alpha);
                 
