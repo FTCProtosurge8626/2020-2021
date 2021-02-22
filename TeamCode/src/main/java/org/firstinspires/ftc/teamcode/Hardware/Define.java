@@ -50,7 +50,7 @@ public abstract class Define extends LinearOpMode {
     
     public ColorSensor ColorS;	// Hardware Device Object
     
-    //Camera Variables
+    //Camrea Variables
     public boolean detection = false;
     
     protected void initVariables() {
@@ -163,5 +163,22 @@ public abstract class Define extends LinearOpMode {
         BL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);	//Sets BackLeftMotor to run with encoder
         BR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);	//Sets BackRightMotor to run with encoder
         
+    }
+    
+    protected void movementPower(double FLPower, double FRPower, double BLPower, double BRPower) {
+        FL.setPower(FLPower);
+        FR.setPower(FRPower);
+        BL.setPower(BLPower);
+        BR.setPower(BRPower);
+    }
+    
+    protected void shootPower(double RightSPower, double LeftSPower) {
+        LeftS.setPower(RightSPower);
+        RightS.setPower(LeftSPower);
+    }
+    
+    protected double heading() {
+        angles = IMU.getAngularOrientation();
+        return angles.firstAngle;
     }
 }

@@ -1,19 +1,21 @@
 package org.firstinspires.ftc.teamcode.Autonomous.Run;
 
-import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
-import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.teamcode.Hardware.Define;
+
 import java.util.List;
 
 @Autonomous(name="Run: Autonomous", group="Run")
 public class RunAutonomous extends Define {
+    
+    public double orientation;
     
     private static final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
     private static final String LABEL_FIRST_ELEMENT = "Quad";
@@ -46,7 +48,7 @@ public class RunAutonomous extends Define {
         
         if (tfod != null) {
             tfod.activate();
-            tfod.setZoom(2.5, 16.0/9.0);
+            tfod.setZoom(2, 1);
         }
         
         waitForStart();
@@ -55,25 +57,14 @@ public class RunAutonomous extends Define {
         
         while (rings == "None" && detectionTime.seconds() < 1.5 && !isStopRequested()) {
             if (tfod != null) {
-                // getUpdatedRecognitions() will return null if no new information is available since
-                // the last time that call was made.
                 List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
                 
                 if (updatedRecognitions != null) {
-                    //telemetry.addData("# Object Detected", updatedRecognitions.size());
-                    // step through the list of recognitions and display boundary info.
                     int i = 0;
                     
                     for (Recognition recognition : updatedRecognitions) {
-						/*
-						telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
-						telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
-								recognition.getLeft(), recognition.getTop());
-						telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
-								recognition.getRight(), recognition.getBottom());*/
                         rings = recognition.getLabel();
                     }
-                    //telemetry.update();
                 }
             }
         }
@@ -90,7 +81,7 @@ public class RunAutonomous extends Define {
                 
                 movement(-1,0,90,.75);
                 
-                movement(0,1,90,.65);
+                movement(0,1,90,.5);
                 
                 movement(0,0,0,0);
                 
@@ -108,9 +99,9 @@ public class RunAutonomous extends Define {
                 
                 movement(0,1,0,.25);
                 
-                movement(-1,0,0,.65);
+                movement(-1,0,0,.7);
                 
-            }else if (rings == "Quad") {
+            } else if (rings == "Quad") {
                 
                 telemetry.addData("Placement: ", "C");
                 telemetry.update();
@@ -122,13 +113,15 @@ public class RunAutonomous extends Define {
                 
                 movement(1,0,90,2.65);
                 
-                movement(1,0,90,.25);
+                movement(1,0,90,.3);
                 
-                movement(0,-1,90,1.3);
+                movement(0,-1,90,1.4);
                 
                 movement(0,0,0,0);
             }
         }
+        
+        orientation = heading();
         
         if (tfod != null) {
             tfod.shutdown();
@@ -213,9 +206,9 @@ public class RunAutonomous extends Define {
         {
             correctHeading();
             movementPower(-turn, turn, turn, -turn);
-            
-            telemetry.addData("Turn: ", turn);
-            telemetry.update();
+			/*
+			telemetry.addData("Turn: ", turn);
+			telemetry.update();*/
             //if (turn > 0.5 || turn < -0.5) break;
         }
         movementPower(0,0,0,0);
@@ -292,22 +285,22 @@ public class RunAutonomous extends Define {
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT);
     }
-    
-    protected void movementPower(double FLPower, double FRPower, double BLPower, double BRPower) {
-        FL.setPower(FLPower);
-        FR.setPower(FRPower);
-        BL.setPower(BLPower);
-        BR.setPower(BRPower);
-    }
-    
-    public void shootPower(double RightSPower, double LeftSPower) {
-        LeftS.setPower(RightSPower);
-        RightS.setPower(LeftSPower);
-    }
-    
-    protected double heading() {
-        
-        angles = IMU.getAngularOrientation();
-        return angles.firstAngle;
-    }
+	/*
+	public void movementPower(double FLPower, double FRPower, double BLPower, double BRPower) {
+		FL.setPower(FLPower);
+		FR.setPower(FRPower);
+		BL.setPower(BLPower);
+		BR.setPower(BRPower);
+	}
+	
+	public void shootPower(double RightSPower, double LeftSPower) {
+		LeftS.setPower(RightSPower);
+		RightS.setPower(LeftSPower);
+	}
+	
+	public double heading() {
+		
+		angles = IMU.getAngularOrientation();
+		return angles.firstAngle;
+	}*/
 }

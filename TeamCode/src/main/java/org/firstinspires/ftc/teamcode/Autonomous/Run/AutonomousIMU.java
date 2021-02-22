@@ -1,17 +1,9 @@
 package org.firstinspires.ftc.teamcode.Autonomous.Run;
 
-import org.firstinspires.ftc.teamcode.Hardware.Define;
-import java.lang.annotation.Target;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.hardware.SwitchableLight;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.NormalizedRGBA;
-import android.app.Activity;
-import android.graphics.Color;
-import android.view.View;
-import java.util.List;
+
+import org.firstinspires.ftc.teamcode.Hardware.Define;
 
 @Autonomous(name="Run: AutonomousIMU", group="Run")
 public class AutonomousIMU extends Define {
@@ -148,20 +140,15 @@ public class AutonomousIMU extends Define {
     
     private void compass(double angle) {
         target = angle;
-        correctHeading();
+        heading();
         while (turn > 0.5 || turn < -0.5)
         {
-            correctHeading();
+            heading();
             movementPower(-turn, turn, turn, -turn);
             //if (turn > 0.5 || turn < -0.5) break;
         }
         movementPower(0,0,0,0);
         target = heading();
-    }
-    
-    public void correctHeading() {
-        heading = heading();
-        turn = (heading - target) * .02;
     }
     
     private void intakeUp(int sleep) {

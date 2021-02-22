@@ -1,11 +1,6 @@
 package org.firstinspires.ftc.teamcode.TeleOp.Run;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.hardware.SwitchableLight;
-import android.app.Activity;
-import android.graphics.Color;
-import android.view.View;
 
 import org.firstinspires.ftc.teamcode.Hardware.Define;
 
@@ -14,6 +9,12 @@ public class RunTeleOp extends Define {
     
     double sign = 1;
     
+    //RunAutonomous Autonomous = new RunAutonomous();
+    
+    double moveTarget;
+    double moveTurn;
+    double moveHeading;
+    
     public void runOpMode() {
         
         initHardware();
@@ -21,23 +22,15 @@ public class RunTeleOp extends Define {
         
         runWithoutEncoders();
         
-        target = heading();
+        moveHeading = heading();
         
         waitForStart();
         
         while(opModeIsActive()) {
-			/*
-			if(gamepad1.atRest()){
-			if(ColorS.alpha() > 0.05) {
-				compass(true);
-				telemetry.addLine().addData("alpha", ColorS.alpha());
-				telemetry.addLine(Boolean.toString(ColorS.alpha() > 0.05));
-				telemetry.update();
-			}
-			telemetry.addLine().addData("alpha", ColorS.alpha());
-			telemetry.addLine(Boolean.toString(ColorS.alpha() > 0.05));
-			telemetry.update();
-			}*/
+            
+            if(ColorS.alpha() >= 400) {
+                compass(true);
+            }
             
             compass(gamepad1.dpad_up);
             movement(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, gamepad1.right_stick_button, gamepad1.left_stick_button);
@@ -47,7 +40,12 @@ public class RunTeleOp extends Define {
 			wobbleArm(gamepad1.a, gamepad1.b);
 			wobbleClamp(gamepad1.y);
 			wobbleLock(gamepad1.x);
-			*/
+			
+				telemetry.addLine().addData("Heading: ", heading());
+				telemetry.addLine().addData("MoveTurn: ", moveTurn);
+				telemetry.addLine().addData("MoveTarget: ", moveTarget);
+				telemetry.update();
+				*/
         }
     }
     
@@ -73,21 +71,36 @@ public class RunTeleOp extends Define {
         double FRPower = half ? (((forward + horizontal) - rotation)/2) * sign : ((forward + horizontal) - rotation) * sign;
         double BLPower = half ? (((forward - horizontal) - rotation)/2) * sign : ((forward - horizontal) - rotation) * sign;
         double BRPower = half ? (((forward + horizontal) + rotation)/2) * sign : ((forward + horizontal) + rotation) * sign;
+		/*
+		if (rotation != 0) {
+		moveHeading = heading();
+		moveTarget = heading();
+		moveTurn = (moveHeading - moveTarget) * .02;
+		}
+		
+		if (forward != 0 || horizontal != 0)
+		moveHeading = heading();
+		moveTurn = (moveHeading - moveTarget) * .02;
+		
+		telemetry.addLine().addData("Heading: ", heading());
+		telemetry.addLine().addData("MoveTurn: ", moveTurn);
+		telemetry.addLine().addData("MoveTarget: ", moveTarget);
+		telemetry.update();
+		*/
+        //movementPower(-moveTurn, moveTurn, -moveTurn, moveTurn);
         
         movementPower(FLPower, FRPower, BLPower, BRPower);
     }
     
     private void compass(boolean north) {
-        if (north) target = 0;
         if(north)
             turn = (heading() - target) * .02;
-        while ((turn > 0.25 || turn < -0.25) && !isStopRequested())
+        while ((turn > 0.1 || turn < -0.1) && !isStopRequested())
         {
             turn = (heading() - target) * .02;
             
             if (gamepad1.left_stick_y != 0 || gamepad1.left_stick_x != 0 || gamepad1.right_stick_x != 0)
             {
-                turn = 0;
                 break;
             }
             movement(0, 0, turn,  gamepad1.right_bumper, gamepad1.left_stick_button);
@@ -147,22 +160,25 @@ public class RunTeleOp extends Define {
             lockSwitch = true;
         }
     }
-    
-    protected void movementPower(double FLPower, double FRPower, double BLPower, double BRPower) {
+    /*
+    public void movementPower(double FLPower, double FRPower, double BLPower, double BRPower) {
         FL.setPower(FLPower);
         FR.setPower(FRPower);
         BL.setPower(BLPower);
         BR.setPower(BRPower);
     }
     
-    protected void shootPower(double RightSPower, double LeftSPower) {
+    public void shootPower(double RightSPower, double LeftSPower) {
         LeftS.setPower(RightSPower);
         RightS.setPower(LeftSPower);
     }
-    
-    protected double heading() {
-        
+    public double heading() {
         angles = IMU.getAngularOrientation();
         return angles.firstAngle;
-    }
+    }*//*
+    public double heading() {
+        if (Autonomous.orientation != 0)
+            return heading() - Autonomous.orientation;
+        return heading();
+    }*/
 }
