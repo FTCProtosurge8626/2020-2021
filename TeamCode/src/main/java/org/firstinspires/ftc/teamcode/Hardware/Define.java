@@ -1,22 +1,17 @@
 package org.firstinspires.ftc.teamcode.Hardware;
 
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-
-import com.qualcomm.robotcore.hardware.Servo;
-
-import com.qualcomm.robotcore.hardware.ColorSensor;
-import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
-
-
-import com.qualcomm.hardware.bosch.BNO055IMU;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-
 import android.app.Activity;
 import android.graphics.Color;
 import android.view.View;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
+
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 public abstract class Define extends LinearOpMode {
     
@@ -55,7 +50,7 @@ public abstract class Define extends LinearOpMode {
     
     public ColorSensor ColorS;	// Hardware Device Object
     
-    //Camrea Variables
+    //Camera Variables
     public boolean detection = false;
     
     protected void initVariables() {
