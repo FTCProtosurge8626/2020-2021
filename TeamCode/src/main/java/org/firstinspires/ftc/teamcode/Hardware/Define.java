@@ -78,26 +78,26 @@ public abstract class Define extends LinearOpMode {
         FR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         BL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         BR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-		/*
-		LeftS = hardwareMap.dcMotor.get("LeftShooter");		//LS = LeftShooter
-		RightS = hardwareMap.dcMotor.get("RightShooter");	//RS = RightShooter
-		
-		LeftS.setDirection(DcMotorSimple.Direction.FORWARD);	//Sets LeftShooter's Direction
-		RightS.setDirection(DcMotorSimple.Direction.FORWARD);	//Sets RightShooter's Direction
-		
-		Intake = hardwareMap.dcMotor.get("Intake");		//Intake = Intake
-		
-		Intake.setDirection(DcMotorSimple.Direction.FORWARD);	//Sets Intake's Direction
-		
-		WobbleA = hardwareMap.dcMotor.get("WobbleArm");	//WobbleA = WobbleArm
-		WobbleC = hardwareMap.servo.get("WobbleClamp");	//WobbleC = WobbleClamp
-		WobbleL = hardwareMap.servo.get("WobbleLock");	//WobbleL = WobbleLock
-		
-		WobbleA.setDirection(DcMotorSimple.Direction.FORWARD);	//Sets WobbleArm's Direction
-		
-		WobbleC.setPosition(0);
-		WobbleL.setPosition(0);
-		*/
+        
+        LeftS = hardwareMap.dcMotor.get("LeftShooter");		//LS = LeftShooter
+        RightS = hardwareMap.dcMotor.get("RightShooter");	//RS = RightShooter
+        
+        LeftS.setDirection(DcMotorSimple.Direction.FORWARD);	//Sets LeftShooter's Direction
+        RightS.setDirection(DcMotorSimple.Direction.FORWARD);	//Sets RightShooter's Direction
+        
+        Intake = hardwareMap.dcMotor.get("Intake");		//Intake = Intake
+        
+        Intake.setDirection(DcMotorSimple.Direction.FORWARD);	//Sets Intake's Direction
+        
+        WobbleA = hardwareMap.dcMotor.get("WobbleArm");	//WobbleA = WobbleArm
+        WobbleC = hardwareMap.servo.get("WobbleClamp");	//WobbleC = WobbleClamp
+        WobbleL = hardwareMap.servo.get("WobbleLock");	//WobbleL = WobbleLock
+        
+        WobbleA.setDirection(DcMotorSimple.Direction.FORWARD);	//Sets WobbleArm's Direction
+        
+        WobbleC.setPosition(0);
+        WobbleL.setPosition(0);
+        
         IMU = hardwareMap.get(BNO055IMU.class, "IMU"); //IMU = IMU
         
         //Initializes IMU
