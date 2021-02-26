@@ -74,10 +74,10 @@ public abstract class Define extends LinearOpMode {
         BL.setDirection(DcMotorSimple.Direction.FORWARD);   //Sets BackLeftMotor's Direction
         BR.setDirection(DcMotorSimple.Direction.REVERSE);   //Sets BackRightMotor's Direction
         
-        FL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        FR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        BL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        BR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        FL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);   //Stops FrontLeftMotor's Movement when setPower is 0
+        FR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);   //Stops FrontRightMotor's Movement when setPower is 0
+        BL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);   //Stops BackLeftMotor's Movement when setPower is 0
+        BR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);   //Stops BackRightMotor's Movement when setPower is 0
         
         LeftS = hardwareMap.dcMotor.get("LeftShooter");		//LS = LeftShooter
         RightS = hardwareMap.dcMotor.get("RightShooter");	//RS = RightShooter
@@ -92,11 +92,13 @@ public abstract class Define extends LinearOpMode {
         WobbleA = hardwareMap.dcMotor.get("WobbleArm");	//WobbleA = WobbleArm
         WobbleC = hardwareMap.servo.get("WobbleClamp");	//WobbleC = WobbleClamp
         WobbleL = hardwareMap.servo.get("WobbleLock");	//WobbleL = WobbleLock
+    
+        WobbleA.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);	//Sets WobbleArm's Direction
+    
+        //Stops WobbleGoalArm's Movement when setPower is 0
         
-        WobbleA.setDirection(DcMotorSimple.Direction.FORWARD);	//Sets WobbleArm's Direction
-        
-        WobbleC.setPosition(0);
-        WobbleL.setPosition(0);
+        WobbleC.setPosition(0); //Sets WobbleClamp's Position
+        WobbleL.setPosition(0); //Sets WobbleLocks's Position
         
         IMU = hardwareMap.get(BNO055IMU.class, "IMU"); //IMU = IMU
         
