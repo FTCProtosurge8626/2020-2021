@@ -1,15 +1,15 @@
-package org.firstinspires.ftc.teamcode.TeleOp.Run;
+package org.firstinspires.ftc.teamcode.TeleOp;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.Autonomous.Run.RunAutonomous;
+import org.firstinspires.ftc.teamcode.Autonomous.RunAutonomous;
 import org.firstinspires.ftc.teamcode.Hardware.Define;
 
 @TeleOp(name = "Run: TeleOp", group = "TeleOp")
 public class RunTeleOp extends Define {
     
-    double sign = 1;
+    double sign = -1;
     
     boolean clampSwitch = true;
     boolean lockSwitch = true;
@@ -92,7 +92,7 @@ public class RunTeleOp extends Define {
     private void compass(boolean north) {
         if(north)
             turn = (setHeading() - target) * .02;
-        while ((turn > 0.1 || turn < -0.1) && !isStopRequested())
+        while ((turn > 179.9 || turn < -179.9) && !isStopRequested())
         {
             turn = (setHeading() - target) * .02;
             if (gamepad1.left_stick_y != 0 || gamepad1.left_stick_x != 0 || gamepad1.right_stick_x != 0)

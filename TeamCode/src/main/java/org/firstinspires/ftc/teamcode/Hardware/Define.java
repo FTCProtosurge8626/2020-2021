@@ -47,6 +47,7 @@ public abstract class Define extends LinearOpMode {
     public double turn;
     
     public Orientation angles;
+    //public JsonElement Orientation;
     
     public ColorSensor ColorS;	// Hardware Device Object
     
@@ -69,10 +70,10 @@ public abstract class Define extends LinearOpMode {
         BR = hardwareMap.dcMotor.get("BackLeft");	//BR = BackRightMotor
         
         //Sets motor's direction
-        FL.setDirection(DcMotorSimple.Direction.REVERSE);   //Sets FrontLeftMotor's Direction
-        FR.setDirection(DcMotorSimple.Direction.FORWARD);   //Sets FrontRightMotor's Direction
-        BL.setDirection(DcMotorSimple.Direction.FORWARD);   //Sets BackLeftMotor's Direction
-        BR.setDirection(DcMotorSimple.Direction.REVERSE);   //Sets BackRightMotor's Direction
+        FL.setDirection(DcMotorSimple.Direction.FORWARD);   //Sets FrontLeftMotor's Direction
+        FR.setDirection(DcMotorSimple.Direction.REVERSE);   //Sets FrontRightMotor's Direction
+        BL.setDirection(DcMotorSimple.Direction.REVERSE);   //Sets BackLeftMotor's Direction
+        BR.setDirection(DcMotorSimple.Direction.FORWARD);   //Sets BackRightMotor's Direction
         
         FL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);   //Stops FrontLeftMotor's Movement when setPower is 0
         FR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);   //Stops FrontRightMotor's Movement when setPower is 0
