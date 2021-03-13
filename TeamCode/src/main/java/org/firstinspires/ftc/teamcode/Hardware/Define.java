@@ -6,6 +6,7 @@ import android.view.View;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -32,6 +33,7 @@ public abstract class Define extends LinearOpMode {
     public DcMotor WobbleA;  //Wobble Goal Grabber Arm
     public Servo WobbleC;  //Wobble Goal Grabber Clamp
     public Servo WobbleL;  //Wobble Goal Grabber Lock
+    public CRServo Indexer;  //Indexer
     
     //Encoder Variables
     public static final double	 COUNTS_PER_MOTOR_REV	= 1440 ;	// eg: TETRIX Motor Encoder
@@ -47,12 +49,17 @@ public abstract class Define extends LinearOpMode {
     public double turn;
     
     public Orientation angles;
-    //public JsonElement Orientation;
     
     public ColorSensor ColorS;	// Hardware Device Object
     
     //Camrea Variables
     public boolean detection = false;
+    
+    public void initTeleOp(){
+        initHardware();
+        initVariables();
+        movementForward();
+    }
     
     protected void initVariables() {
         target = 0;
@@ -69,33 +76,42 @@ public abstract class Define extends LinearOpMode {
         BL = hardwareMap.dcMotor.get("BackRight");	//BL = BackLeftMotor
         BR = hardwareMap.dcMotor.get("BackLeft");	//BR = BackRightMotor
         
+        LeftS = hardwareMap.dcMotor.get("LeftShooter");		//LS = LeftShooter
+        RightS = hardwareMap.dcMotor.get("RightShooter");	//RS = RightShooter
+        
+        //Intake = hardwareMap.dcMotor.get("Intake");		//Intake = Intake
+        
+        WobbleA = hardwareMap.dcMotor.get("WobbleArm");	//WobbleA = WobbleArm
+        WobbleC = hardwareMap.servo.get("WobbleClamp");	//WobbleC = WobbleClamp
+        WobbleL = hardwareMap.servo.get("WobbleLock");	//WobbleL = WobbleLock
+        
+        Indexer = hardwareMap.crservo.get("Indexer");	//Indexer = Indexer
+        
         //Sets motor's direction
-        FL.setDirection(DcMotorSimple.Direction.FORWARD);   //Sets FrontLeftMotor's Direction
-        FR.setDirection(DcMotorSimple.Direction.REVERSE);   //Sets FrontRightMotor's Direction
-        BL.setDirection(DcMotorSimple.Direction.REVERSE);   //Sets BackLeftMotor's Direction
-        BR.setDirection(DcMotorSimple.Direction.FORWARD);   //Sets BackRightMotor's Direction
+        FL.setDirection(DcMotorSimple.Direction.REVERSE);   //Sets FrontLeftMotor's Direction
+        FR.setDirection(DcMotorSimple.Direction.FORWARD);   //Sets FrontRightMotor's Direction
+        BL.setDirection(DcMotorSimple.Direction.FORWARD);   //Sets BackLeftMotor's Direction
+        BR.setDirection(DcMotorSimple.Direction.REVERSE);   //Sets BackRightMotor's Direction
+        
+        LeftS.setDirection(DcMotorSimple.Direction.FORWARD);	//Sets LeftShooter's Direction
+        RightS.setDirection(DcMotorSimple.Direction.FORWARD);	//Sets RightShooter's Direction
+        
+        //Intake.setDirection(DcMotorSimple.Direction.FORWARD);	//Sets Intake's Direction
+        
+        WobbleA.setDirection(DcMotorSimple.Direction.FORWARD);	//Sets Intake's Direction
         
         FL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);   //Stops FrontLeftMotor's Movement when setPower is 0
         FR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);   //Stops FrontRightMotor's Movement when setPower is 0
         BL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);   //Stops BackLeftMotor's Movement when setPower is 0
         BR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);   //Stops BackRightMotor's Movement when setPower is 0
         
-        LeftS = hardwareMap.dcMotor.get("LeftShooter");		//LS = LeftShooter
-        RightS = hardwareMap.dcMotor.get("RightShooter");	//RS = RightShooter
+        LeftS.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);   //Stops LeftShooter's Movement when setPower is 0
+        RightS.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);   //Stops RightShooter's Movement when setPower is 0
         
-        LeftS.setDirection(DcMotorSimple.Direction.FORWARD);	//Sets LeftShooter's Direction
-        RightS.setDirection(DcMotorSimple.Direction.FORWARD);	//Sets RightShooter's Direction
+        //Intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);   //Stops Indexer's Movement when setPower is 0
         
-        Intake = hardwareMap.dcMotor.get("Intake");		//Intake = Intake
+        WobbleA.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);	//Stops WobbleArm's Movement when setPower is 0
         
-        Intake.setDirection(DcMotorSimple.Direction.FORWARD);	//Sets Intake's Direction
-        
-        WobbleA = hardwareMap.dcMotor.get("WobbleArm");	//WobbleA = WobbleArm
-        WobbleC = hardwareMap.servo.get("WobbleClamp");	//WobbleC = WobbleClamp
-        WobbleL = hardwareMap.servo.get("WobbleLock");	//WobbleL = WobbleLock
-    
-        WobbleA.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);	//Sets WobbleArm's Direction
-    
         //Stops WobbleGoalArm's Movement when setPower is 0
         
         WobbleC.setPosition(0); //Sets WobbleClamp's Position
@@ -166,6 +182,22 @@ public abstract class Define extends LinearOpMode {
         BL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);	//Sets BackLeftMotor to run with encoder
         BR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);	//Sets BackRightMotor to run with encoder
         
+    }
+    
+    protected void movementForward() {
+        //Sets motor's direction
+        FL.setDirection(DcMotorSimple.Direction.REVERSE);   //Sets FrontLeftMotor's Direction
+        FR.setDirection(DcMotorSimple.Direction.FORWARD);   //Sets FrontRightMotor's Direction
+        BL.setDirection(DcMotorSimple.Direction.FORWARD);   //Sets BackLeftMotor's Direction
+        BR.setDirection(DcMotorSimple.Direction.REVERSE);   //Sets BackRightMotor's Direction
+    }
+    
+    protected void movementReverse() {
+        //Sets motor's direction
+        FL.setDirection(DcMotorSimple.Direction.FORWARD);   //Sets FrontLeftMotor's Direction
+        FR.setDirection(DcMotorSimple.Direction.REVERSE);   //Sets FrontRightMotor's Direction
+        BL.setDirection(DcMotorSimple.Direction.REVERSE);   //Sets BackLeftMotor's Direction
+        BR.setDirection(DcMotorSimple.Direction.FORWARD);   //Sets BackRightMotor's Direction
     }
     
     protected void movementPower(double FLPower, double FRPower, double BLPower, double BRPower) {

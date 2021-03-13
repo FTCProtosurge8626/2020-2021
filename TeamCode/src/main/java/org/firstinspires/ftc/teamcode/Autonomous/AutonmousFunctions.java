@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.Autonomous;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
@@ -12,35 +11,34 @@ import org.firstinspires.ftc.teamcode.Hardware.Define;
 
 import java.util.List;
 
-//@Disabled
-@Autonomous(name="Run: Autonomous", group="Run")
-public class RunAutonomous extends Define {
+public class AutonmousFunctions extends Define {
     
-    private static final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
-    private static final String LABEL_FIRST_ELEMENT = "Quad";
-    private static final String LABEL_SECOND_ELEMENT = "Single";
-    private static final String VUFORIA_KEY = "AUH3W7//////AAABmRPeTi20x0n1vDw0WNnEaB85+/2MLZ8wvrAecldHMZYx0zw8T/JNFB7k8UfpsZGqwPNVgsWRHKlPk29EFCNgAZo9e+aqmobPLwzHEr5dm1EdFPQizLMKES9UdOSIdNb/Sx2cO8oI5iURlnGtF267JIi+oqlYZawFr0ERoqA9lmlRZpE4ak83vkqYn+2iFHXJoBvxZCvOu2O6toN7tO5LhnItem0I4iFrQNw9378YiVyIP4I7nE5XtlYHKmhiBdyTXkGyvXTUUI/lzpQVxU0Z9ynL0c4t09v54i/qQ1racrZG1CrrVMLVT8m7+L8+0dUu3Zv7zLl/G3MpvnufDs2KoA5VRjta0gnmVJoUME2npfZW";
-    private VuforiaLocalizer vuforia;
-    private TFObjectDetector tfod;
+    static final String configFileName = "AutonomousOrientation.txt";
     
-    private String rings = "None";
+    static final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
+    static final String LABEL_NO_ELEMENT = "None";
+    static final String LABEL_FIRST_ELEMENT = "Quad";
+    static final String LABEL_SECOND_ELEMENT = "Single";
+    static final String VUFORIA_KEY = "AUH3W7//////AAABmRPeTi20x0n1vDw0WNnEaB85+/2MLZ8wvrAecldHMZYx0zw8T/JNFB7k8UfpsZGqwPNVgsWRHKlPk29EFCNgAZo9e+aqmobPLwzHEr5dm1EdFPQizLMKES9UdOSIdNb/Sx2cO8oI5iURlnGtF267JIi+oqlYZawFr0ERoqA9lmlRZpE4ak83vkqYn+2iFHXJoBvxZCvOu2O6toN7tO5LhnItem0I4iFrQNw9378YiVyIP4I7nE5XtlYHKmhiBdyTXkGyvXTUUI/lzpQVxU0Z9ynL0c4t09v54i/qQ1racrZG1CrrVMLVT8m7+L8+0dUu3Zv7zLl/G3MpvnufDs2KoA5VRjta0gnmVJoUME2npfZW";
     
-    private ElapsedTime	 currentPos = new ElapsedTime();
-    private ElapsedTime	 detectionTime = new ElapsedTime();
-    private ElapsedTime	 headingTime = new ElapsedTime();
     
-    static final double	 COUNTS_PER_MOTOR_REV	= 1440 ;	// eg: TETRIX Motor Encoder
-    static final double	 DRIVE_GEAR_REDUCTION	= 2.0 ;	 // This is < 1.0 if geared UP
-    static final double	 WHEEL_DIAMETER_INCHES   = 4.0 ;	 // For figuring circumference
-    static final double	 COUNTS_PER_INCH		 = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.1415);
+    static final double COUNTS_PER_MOTOR_REV = 1440;    // eg: TETRIX Motor Encoder
+    static final double DRIVE_GEAR_REDUCTION = 2.0;     // This is < 1.0 if geared UP
+    static final double WHEEL_DIAMETER_INCHES = 4.0;     // For figuring circumference
+    static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.1415);
     
-    private String configFileName="AutonomousOrientation.txt";
-    
+    public void InitAutonomous() {
+        VuforiaLocalizer vuforia;
+        TFObjectDetector tfod;
+        
+        ElapsedTime currentPos = new ElapsedTime();
+        ElapsedTime detectionTime = new ElapsedTime();
+        ElapsedTime headingTime = new ElapsedTime();
+    }
     public void runOpMode() {
         
         initHardware();
         initVariables();
-        movementReverse();
         runEncoders();
         
         initVuforia();
@@ -57,7 +55,7 @@ public class RunAutonomous extends Define {
         
         detectionTime.reset();
         
-        while (rings == "None" && detectionTime.seconds() < 1.5 && !isStopRequested()) {
+        while (rings == LABEL_NO_ELEMENT && detectionTime.seconds() < 1.5 && !isStopRequested()) {
             if (tfod != null) {
                 List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
                 
@@ -71,91 +69,55 @@ public class RunAutonomous extends Define {
             }
         }
         if(opModeIsActive()){
-            if(rings == "None") {
+            if(rings == LABEL_NO_ELEMENT) {
                 
                 telemetry.addData("Placement: ", "A");
                 telemetry.update();
                 
+                //A
                 movement(0,-1,0,1.25);
                 
-                movement(1,0,0,2);
+                movement(1,0,90,1.5);
                 
-                movement(0,1,0,1.175);
+                movement(-1,0,90,.75);
                 
-                //shooter(2000);
+                movement(0,1,90,.5);
                 
-                //Intake.setPower(1);
+                movement(0,0,0,0);
                 
-                movement(-1,0,0,.75);
-                
-                movementPower(.25,.25,.25,.25);
-                
-                sleep(1000);
-                
-                //Intake.setPower(0);
-                
-                movement(1,0,-90,1.1);
-                
-                movement(1,0,0,.25);
-                
-                //wobbleGoal();
-                
-            } else if (rings == "Single") {
+            } else if (rings == LABEL_FIRST_ELEMENT) {
                 
                 telemetry.addData("Placement: ", "B");
                 telemetry.update();
                 
                 //B
-                
                 movement(0,-1,0,1.25);
                 
-                movement(1,0,0,2);
+                movement(0,1,0,.1);
                 
-                movement(0,1,0,1.175);
+                movement(1,0,0,2.4);
                 
-                //shooter(2000);
+                movement(0,1,0,.25);
                 
-                //Intake.setPower(1);
+                movement(-1,0,0,.7);
                 
-                movement(-1,0,0,.75);
+            } else if (rings == LABEL_SECOND_ELEMENT) {
                 
-                movementPower(.25,.25,.25,.25);
+                telemetry.addData("Placement: ", "C");
+                telemetry.update();
                 
-                sleep(1000);
-                
-                //Intake.setPower(0);
-                
-                movement(1,0,0,1.25);
-                
-                //wobbleGoal();
-                
-            } else if (rings == "Quad") {
-                
+                //C
                 movement(0,-1,0,1.25);
                 
-                movement(1,0,0,2);
+                movement(0,1,0,.1);
                 
-                movement(0,1,0,1.175);
+                movement(1,0,90,2.65);
                 
-                //shooter(2000);
+                movement(1,0,90,.3);
                 
-                //Intake.setPower(1);
+                movement(0,-1,90,1.4);
                 
-                movement(-1,0,0,.75);
-                
-                movementPower(.25,.25,.25,.25);
-                
-                sleep(1000);
-                
-                //Intake.setPower(0);
-                
-                movement(1,0,0,1.75);
-                
-                //wobbleGoal();
-                
-                movement(0,1,0,1.175);
-                
-                movement(-1,0,0,.6);
+                movement(0,0,0,0);
             }
         }
         
@@ -246,6 +208,67 @@ public class RunAutonomous extends Define {
         }
     }
     
+    private void compass(double angle) {
+        target = angle;
+        correctHeading();
+        headingTime.reset();
+        while (((turn > 0.06 || turn < -0.06) && headingTime.seconds() < 2) && !isStopRequested())
+        {
+            correctHeading();
+            movementPower(-turn, turn, turn, -turn);
+			/*
+			telemetry.addData("Turn: ", turn);
+			telemetry.update();*/
+            //if (turn > 0.5 || turn < -0.5) break;
+        }
+        movementPower(0,0,0,0);
+        target = heading();
+    }
+    
+    public void correctHeading() {
+        turn = (target - heading()) * .02;
+    }
+    
+    private void intakeUp(int sleep) {
+        Intake.setPower(1);
+        sleep(sleep);
+        Intake.setPower(0);
+    }
+    
+    private void intakeDown(int sleep) {
+        Intake.setPower(-1);
+        sleep(sleep);
+        Intake.setPower(0);
+    }
+    
+    private void armUp(int sleep) {
+        WobbleA.setPower(1);
+        sleep(sleep);
+        WobbleA.setPower(0);
+    }
+    
+    private void armDown(int sleep) {
+        WobbleA.setPower(-1);
+        sleep(sleep);
+        WobbleA.setPower(0);
+    }
+    
+    private void clampUp() {
+        WobbleC.setPosition(1);
+    }
+    
+    private void clampDown() {
+        WobbleC.setPosition(0);
+    }
+    
+    private void LockUp() {
+        WobbleL.setPosition(1);
+    }
+    
+    private void lockDown() {
+        WobbleL.setPosition(0);
+    }
+    
     private void initVuforia() {
         /*
          * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
@@ -272,41 +295,22 @@ public class RunAutonomous extends Define {
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT);
     }
-    
-    
-    private void compass(double angle) {
-        target = angle;
-        turn = (target - heading()) * .02;
-        headingTime.reset();
-        while (((turn > 0.06 || turn < -0.06) && headingTime.seconds() < 2) && !isStopRequested()) {
-            turn = (target - heading()) * .02;
-            movementPower(-turn, turn, turn, -turn);
-			/*
-			telemetry.addData("Turn: ", turn);
-			telemetry.update();*/
-            //if (turn > 0.5 || turn < -0.5) break;
-        }
-        movementPower(0,0,0,0);
-        target = heading();
-    }
-    
-    private void shooter(int sleep) {
-        shootPower(.705,-.705);
-        Intake.setPower(1);
-        sleep(sleep);
-        Intake.setPower(0);
-        shootPower(0,0);
-    }
-    
-    private void wobbleGoal() {
-        WobbleL.setPosition(0.1);
-        WobbleA.setPower(.5);
-        sleep(300);
-        WobbleA.setPower(0);
-        sleep(500);
-        WobbleC.setPosition(1);
-        sleep(500);
-        WobbleA.setPower(-.5);
-        sleep(300);
-    }
+	/*
+	public void movementPower(double FLPower, double FRPower, double BLPower, double BRPower) {
+		FL.setPower(FLPower);
+		FR.setPower(FRPower);
+		BL.setPower(BLPower);
+		BR.setPower(BRPower);
+	}
+	
+	public void shootPower(double RightSPower, double LeftSPower) {
+		LeftS.setPower(RightSPower);
+		RightS.setPower(LeftSPower);
+	}
+	
+	public double heading() {
+		
+		angles = IMU.getAngularOrientation();
+		return angles.firstAngle;
+	}*/
 }

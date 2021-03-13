@@ -1,12 +1,9 @@
 package org.firstinspires.ftc.teamcode.Autonomous;
 
-import com.google.gson.JsonObject;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Hardware.Define;
-
-import java.io.FileWriter;
 
 //@Disabled
 @Autonomous(name="Run: AutonomousTest", group="Run")
@@ -21,13 +18,17 @@ public class AutonomousTest extends Define {
     static final double	 WHEEL_DIAMETER_INCHES   = 4.0 ;	 // For figuring circumference
     static final double	 COUNTS_PER_INCH		 = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.1415);
     
-    private String configFileName="AutonomousOrientation.txt";
+    //private String configFileName="AutonomousOrientation.txt";
     
     public void runOpMode() {
         
         initHardware();
         initVariables();
-        runEncoders();
+        movementReverse();
+        
+        //runEncoders();
+        
+        runWithoutEncoders();
         
         target = heading();
         
@@ -36,101 +37,92 @@ public class AutonomousTest extends Define {
         detectionTime.reset();
         
         //A
-		/*
-		movement(0,-1,0,1.5);
-		
-		movement(1,0,90,1.5);
-		
-		wobbleGoal();
-		
-		movement(-1,0,0,.55);
-		
-		//shooter(2000);
-		
-		movement(-1,0,0,.55);
-		
-		//Intake.setPower(1);
-		
-		movementPower(.25,.25,.25,.25);
-		
-		sleep(1000);
-		
-		movement(1,0,0,1);
-		
-		movementPower(0,0,0,0);
-		
-		//Intake.setPower(0);
-		
-		
-		//B
-		movement(0,-1,0,1.5);
-		
-		movement(0,1,0,.1);
-		
-		movement(1,0,0,2.2);
-		
-		movement(0,1,0,.5);
-		
-		wobbleGoal();
-		
-		movement(-1,0,0,.65);
-		
-		movement(0,1,0,.35);
-		
-		//shooter(2000);
-		
-		movement(-1,0,0,.55);
-		
-		//Intake.setPower(1);
-		
-		movementPower(.25,.25,.25,.25);
-		
-		sleep(1000);
-		
-		movement(1,0,0,1.15);
-		
-		movementPower(0,0,0,0);
-		
-		//Intake.setPower(0);
-		*/
-        //C
-        movement(0,-1,0,1.5);
+        //movement(1,0,0,5);
+        while(ColorS.alpha() <= 1500 && !isStopRequested()){
+            movementPower(-1,1,-1,1);
+        }
         
-        movement(0,1,0,.1);
-        
-        movement(1,0,0,2.65);
-        
-        movement(0,-1,90,.25);
-        
-        //wobbleGoal();
-        
-        movement(0,1,90,.25);
-        
-        movement(1,0,90,0);
-        
-        movement(1,0,90,.3);
-        
-        movement(0,-1,0,1.4);
-        
-        //shooter(2000);
-        
-        movement(-1,0,0,.65);
-        
-        movement(0,1,0,.35);
-        
-        movement(-1,0,0,.55);
-        
-        //Intake.setPower(1);
-        
-        movementPower(.25,.25,.25,.25);
-        
-        sleep(1000);
-        
-        movement(1,0,0,1.15);
-        
+        while(ColorS.alpha() <= 1500 && !isStopRequested()){
+            movementPower(.45,.45,.45,.45);
+        }
         movementPower(0,0,0,0);
         
-        //Intake.setPower(0);
+        //movement(1,0,0,5);
+        //movement(1,0,-90,1.25);
+		/*
+		movement(1,0,0,2);
+		
+		movement(0,1,0,1.175);
+		
+		//shooter(2000);
+		
+		//Intake.setPower(1);
+		
+		movement(-1,0,0,.75);
+		
+		movementPower(.25,.25,.25,.25);
+		
+		sleep(1000);
+		
+		//Intake.setPower(0);
+		
+		movement(1,0,-90,1.1);
+		
+		movement(1,0,0,.25);
+		
+		//wobbleGoal();
+		
+		//B
+		
+		movement(0,-1,0,1.25);
+		
+		movement(1,0,0,2);
+		
+		movement(0,1,0,1.175);
+		
+		//shooter(2000);
+		
+		//Intake.setPower(1);
+		
+		movement(-1,0,0,.75);
+		
+		movementPower(.25,.25,.25,.25);
+		
+		sleep(1000);
+		
+		//Intake.setPower(0);
+		
+		movement(1,0,0,1.25);
+		
+		//wobbleGoal();
+		
+		//C
+		
+		movement(0,-1,0,1.25);
+		
+		movement(1,0,0,2);
+		
+		movement(0,1,0,1.175);
+		
+		//shooter(2000);
+		
+		//Intake.setPower(1);
+		
+		movement(-1,0,0,.75);
+		
+		movementPower(.25,.25,.25,.25);
+		
+		sleep(1000);
+		
+		//Intake.setPower(0);
+		
+		movement(1,0,0,1.75);
+		
+		//wobbleGoal();
+		
+		movement(0,1,0,1.175);
+		
+		movement(-1,0,0,.6);
 		/*
 		try {
 		OutputStreamWriter Orientation = new OutputStreamWriter(context.openFileOutput(configFileName, Context.MODE_PRIVATE));
@@ -143,18 +135,15 @@ public class AutonomousTest extends Define {
 	  catch (IOException e) {
 		telemetry.addData("Exception", "Configuration file write failed: ");
 	  }*/
-        double Orientation = heading();
-        JsonObject Heading = new JsonObject();
-        Heading.add("Orientation", Orientation);
-        try(FileWriter AutonomousValues = new FileWriter("Heading.json")) {
-        
-        }
-        /*
-        Heading : [
-            {
-                "Orientation" :Orientation
-            }
-            ]*/
+		/*double Orientation = heading();
+		JsonObject Heading = new JsonObject();
+		Heading.put("Orientation", Orientation);
+		try(FileWriter AutonomousValues = new FileWriter("Heading.json")) {
+			AutonomousValues.write(Heading.toString());
+			AutonomousValues.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}*/
     
     }
     
@@ -168,10 +157,10 @@ public class AutonomousTest extends Define {
             //compass(direction);
             
             // Determine new target position, and pass to motor controller
-            FLTarget = (int)(FL.getCurrentPosition() + (int)-(forward + horizontal) * COUNTS_PER_INCH);
-            FRTarget = (int)(FR.getCurrentPosition() + (int)-(forward - horizontal) * COUNTS_PER_INCH);
-            BLTarget = (int)(BL.getCurrentPosition() + (int)-(forward + horizontal) * COUNTS_PER_INCH);
-            BRTarget = (int)(BR.getCurrentPosition() + (int)-(forward - horizontal) * COUNTS_PER_INCH);
+            FLTarget = (int)(FL.getCurrentPosition() + (int)-(-forward + horizontal) * COUNTS_PER_INCH);
+            FRTarget = (int)(FR.getCurrentPosition() + (int)-(-forward - horizontal) * COUNTS_PER_INCH);
+            BLTarget = (int)(BL.getCurrentPosition() + (int)-(-forward + horizontal) * COUNTS_PER_INCH);
+            BRTarget = (int)(BR.getCurrentPosition() + (int)-(-forward - horizontal) * COUNTS_PER_INCH);
             
             FL.setTargetPosition(FLTarget);
             FR.setTargetPosition(FRTarget);
@@ -182,10 +171,10 @@ public class AutonomousTest extends Define {
             
             // reset the timeout time and start motion.
             currentPos.reset();
-            FL.setPower(1);
-            FR.setPower(1);
-            BL.setPower(1);
-            BR.setPower(1);
+            FL.setPower(.75);
+            FR.setPower(.75);
+            BL.setPower(.75);
+            BR.setPower(.75);
 			/*
 			FL.setPower(-power);
 			FR.setPower(power);
@@ -210,10 +199,12 @@ public class AutonomousTest extends Define {
 					telemetry.addData("Path2",  "Running at %7d :%7d",
 					FL.getCurrentPosition(), FR.getCurrentPosition(),
 					BL.getCurrentPosition(), BR.getCurrentPosition());
-					
-					telemetry.addData("Turn: ", turn);
-					telemetry.update();
 					*/
+                telemetry.addData("Target: ", target);
+                telemetry.addData("Heading: ", heading());
+                telemetry.addData("Turn: ", turn);
+                telemetry.update();
+                
             }
             
             // Stop all motion;
@@ -223,24 +214,25 @@ public class AutonomousTest extends Define {
             runWithoutEncoders();
             
             compass(direction);
-            sleep(500);   // optional pause after each move
         }
     }
     
     private void compass(double angle) {
-        target = angle;
-        turn = (target - heading()) * .02;
+        turn = ((heading() - angle) * .02);
         headingTime.reset();
-        while (((turn > 0.06 || turn < -0.06) && headingTime.seconds() < 2) && !isStopRequested()) {
-            turn = (target - heading()) * .02;
+        while (((turn > .35 || turn < -.35) && headingTime.seconds() < 3) && !isStopRequested()) {
+            turn = (heading() - angle) * .02;
             movementPower(-turn, turn, turn, -turn);
-			/*
-			telemetry.addData("Turn: ", turn);
-			telemetry.update();*/
+            
+            telemetry.addData("Turn: ", turn);
+            telemetry.addData("Heading: ", heading());
+            telemetry.addData("Angle: ", angle);
+            telemetry.update();
             //if (turn > 0.5 || turn < -0.5) break;
         }
         movementPower(0,0,0,0);
         target = heading();
+        sleep(500);
     }
     
     private void shooter(int sleep) {
@@ -254,12 +246,12 @@ public class AutonomousTest extends Define {
     private void wobbleGoal() {
         WobbleL.setPosition(0.1);
         WobbleA.setPower(.5);
-        sleep(300);
+        sleep(500);
         WobbleA.setPower(0);
         sleep(500);
         WobbleC.setPosition(1);
         sleep(500);
         WobbleA.setPower(-.5);
-        sleep(300);
+        sleep(500);
     }
 }
