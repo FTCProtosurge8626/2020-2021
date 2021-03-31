@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.TeleOp.New;
 
-import org.firstinspires.ftc.teamcode.Hardware.New.RunMethods;
+import org.firstinspires.ftc.teamcode.Hardware.RunMethods;
 
 public class Movement extends RunMethods {
     

@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.TeleOp.New;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.teamcode.Hardware.New.RunMethods;
+import org.firstinspires.ftc.teamcode.Hardware.RunMethods;
 
 class Heading extends RunMethods {
     

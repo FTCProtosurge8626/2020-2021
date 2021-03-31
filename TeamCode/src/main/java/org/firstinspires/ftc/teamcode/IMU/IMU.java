@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.teamcode.Hardware.Define;
+import org.firstinspires.ftc.teamcode.Hardware.Scraped.Define;
 
 @TeleOp(name = "IMU", group = "TeleOP")
 public class IMU extends Define {

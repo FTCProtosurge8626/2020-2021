@@ -1,9 +1,9 @@
-package org.firstinspires.ftc.teamcode.Autonomous;
+package org.firstinspires.ftc.teamcode.Autonomous.Scraped;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.Hardware.Define;
+import org.firstinspires.ftc.teamcode.Hardware.Scraped.Define;
 
 //@Disabled
 @Autonomous(name="Run: AutonomousTest", group="Run")

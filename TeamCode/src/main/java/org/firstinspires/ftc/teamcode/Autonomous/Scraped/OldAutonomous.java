@@ -1,5 +1,7 @@
-package org.firstinspires.ftc.teamcode.Autonomous;
+package org.firstinspires.ftc.teamcode.Autonomous.Scraped;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
@@ -7,34 +9,34 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
-import org.firstinspires.ftc.teamcode.Hardware.Define;
+import org.firstinspires.ftc.teamcode.Hardware.Scraped.Define;
 
 import java.util.List;
 
-public class AutonmousFunctions extends Define {
+@Disabled
+@Autonomous(name="Run: Autonomous", group="Run")
+public class OldAutonomous extends Define {
     
-    static final String configFileName = "AutonomousOrientation.txt";
+    private static final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
+    private static final String LABEL_FIRST_ELEMENT = "Quad";
+    private static final String LABEL_SECOND_ELEMENT = "Single";
+    private static final String VUFORIA_KEY = "AUH3W7//////AAABmRPeTi20x0n1vDw0WNnEaB85+/2MLZ8wvrAecldHMZYx0zw8T/JNFB7k8UfpsZGqwPNVgsWRHKlPk29EFCNgAZo9e+aqmobPLwzHEr5dm1EdFPQizLMKES9UdOSIdNb/Sx2cO8oI5iURlnGtF267JIi+oqlYZawFr0ERoqA9lmlRZpE4ak83vkqYn+2iFHXJoBvxZCvOu2O6toN7tO5LhnItem0I4iFrQNw9378YiVyIP4I7nE5XtlYHKmhiBdyTXkGyvXTUUI/lzpQVxU0Z9ynL0c4t09v54i/qQ1racrZG1CrrVMLVT8m7+L8+0dUu3Zv7zLl/G3MpvnufDs2KoA5VRjta0gnmVJoUME2npfZW";
+    private VuforiaLocalizer vuforia;
+    private TFObjectDetector tfod;
     
-    static final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
-    static final String LABEL_NO_ELEMENT = "None";
-    static final String LABEL_FIRST_ELEMENT = "Quad";
-    static final String LABEL_SECOND_ELEMENT = "Single";
-    static final String VUFORIA_KEY = "AUH3W7//////AAABmRPeTi20x0n1vDw0WNnEaB85+/2MLZ8wvrAecldHMZYx0zw8T/JNFB7k8UfpsZGqwPNVgsWRHKlPk29EFCNgAZo9e+aqmobPLwzHEr5dm1EdFPQizLMKES9UdOSIdNb/Sx2cO8oI5iURlnGtF267JIi+oqlYZawFr0ERoqA9lmlRZpE4ak83vkqYn+2iFHXJoBvxZCvOu2O6toN7tO5LhnItem0I4iFrQNw9378YiVyIP4I7nE5XtlYHKmhiBdyTXkGyvXTUUI/lzpQVxU0Z9ynL0c4t09v54i/qQ1racrZG1CrrVMLVT8m7+L8+0dUu3Zv7zLl/G3MpvnufDs2KoA5VRjta0gnmVJoUME2npfZW";
+    private String rings = "None";
     
+    private ElapsedTime	 currentPos = new ElapsedTime();
+    private ElapsedTime	 detectionTime = new ElapsedTime();
+    private ElapsedTime	 headingTime = new ElapsedTime();
     
-    static final double COUNTS_PER_MOTOR_REV = 1440;    // eg: TETRIX Motor Encoder
-    static final double DRIVE_GEAR_REDUCTION = 2.0;     // This is < 1.0 if geared UP
-    static final double WHEEL_DIAMETER_INCHES = 4.0;     // For figuring circumference
-    static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.1415);
+    static final double	 COUNTS_PER_MOTOR_REV	= 1440 ;	// eg: TETRIX Motor Encoder
+    static final double	 DRIVE_GEAR_REDUCTION	= 2.0 ;	 // This is < 1.0 if geared UP
+    static final double	 WHEEL_DIAMETER_INCHES   = 4.0 ;	 // For figuring circumference
+    static final double	 COUNTS_PER_INCH		 = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.1415);
     
-    public void InitAutonomous() {
-        VuforiaLocalizer vuforia;
-        TFObjectDetector tfod;
-        
-        ElapsedTime currentPos = new ElapsedTime();
-        ElapsedTime detectionTime = new ElapsedTime();
-        ElapsedTime headingTime = new ElapsedTime();
-    }
+    private String configFileName="AutonomousOrientation.txt";
+    
     public void runOpMode() {
         
         initHardware();
@@ -55,7 +57,7 @@ public class AutonmousFunctions extends Define {
         
         detectionTime.reset();
         
-        while (rings == LABEL_NO_ELEMENT && detectionTime.seconds() < 1.5 && !isStopRequested()) {
+        while (rings == "None" && detectionTime.seconds() < 1.5 && !isStopRequested()) {
             if (tfod != null) {
                 List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
                 
@@ -69,7 +71,7 @@ public class AutonmousFunctions extends Define {
             }
         }
         if(opModeIsActive()){
-            if(rings == LABEL_NO_ELEMENT) {
+            if(rings == "None") {
                 
                 telemetry.addData("Placement: ", "A");
                 telemetry.update();
@@ -85,7 +87,7 @@ public class AutonmousFunctions extends Define {
                 
                 movement(0,0,0,0);
                 
-            } else if (rings == LABEL_FIRST_ELEMENT) {
+            } else if (rings == "Single") {
                 
                 telemetry.addData("Placement: ", "B");
                 telemetry.update();
@@ -101,7 +103,7 @@ public class AutonmousFunctions extends Define {
                 
                 movement(-1,0,0,.7);
                 
-            } else if (rings == LABEL_SECOND_ELEMENT) {
+            } else if (rings == "Quad") {
                 
                 telemetry.addData("Placement: ", "C");
                 telemetry.update();

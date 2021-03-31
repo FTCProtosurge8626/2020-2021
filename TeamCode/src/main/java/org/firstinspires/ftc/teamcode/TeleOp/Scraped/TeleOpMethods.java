@@ -1,8 +1,8 @@
-package org.firstinspires.ftc.teamcode.TeleOp;
+package org.firstinspires.ftc.teamcode.TeleOp.Scraped;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.Hardware.Define;
+import org.firstinspires.ftc.teamcode.Hardware.Scraped.Define;
 
 public abstract class TeleOpMethods extends Define {
     

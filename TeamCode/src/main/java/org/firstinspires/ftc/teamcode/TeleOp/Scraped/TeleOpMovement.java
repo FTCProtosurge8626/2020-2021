@@ -1,6 +1,6 @@
-package org.firstinspires.ftc.teamcode.TeleOp;
+package org.firstinspires.ftc.teamcode.TeleOp.Scraped;
 
-import org.firstinspires.ftc.teamcode.Hardware.Define;
+import org.firstinspires.ftc.teamcode.Hardware.Scraped.Define;
 
 //@TeleOp(name = "Run: TeleOpMovement", group = "TeleOp")
 public class TeleOpMovement extends Define {
