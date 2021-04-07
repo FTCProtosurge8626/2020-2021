@@ -7,8 +7,6 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 public abstract class HardwareNew extends LinearOpMode {
     
-    public static String breakpoint = "Not Hit";
-    
     public static DcMotor FL, FR, BL, BR;
     public static BNO055IMU IMU;
     
@@ -16,6 +14,7 @@ public abstract class HardwareNew extends LinearOpMode {
         config();
         setDirections();
         imuSetup();
+        ZeroPowerBehavior();
     }
     
     public void config() {
@@ -41,8 +40,15 @@ public abstract class HardwareNew extends LinearOpMode {
     
     public void setDirections() {
         FL.setDirection(DcMotorSimple.Direction.FORWARD);
-        FR.setDirection(DcMotorSimple.Direction.FORWARD);
-        BL.setDirection(DcMotorSimple.Direction.REVERSE);
+        FR.setDirection(DcMotorSimple.Direction.REVERSE);
+        BL.setDirection(DcMotorSimple.Direction.FORWARD);
         BR.setDirection(DcMotorSimple.Direction.REVERSE);
+    }
+    
+    public static void ZeroPowerBehavior() {
+        FL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);	//Sets FrontLeftMotor to break at 0 power
+        FR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);	//Sets FrontRightMotor to break at 0 power
+        BL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);	//Sets BackLeftMotor to break at 0 power
+        BR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);	//Sets BackRightMotor to break at 0 power
     }
 }

@@ -13,9 +13,8 @@ class Heading extends RunMethods {
         if(north) turn = (heading() - target) * .02;
         while (turn > .35 || turn < -.35) {
             turn = (heading() - target) * .02;
-            if (forward != 0 || sideways != 0 || rotation != 0) {
+            if (Controller.LeftStickY != 0 || Controller.LeftStickX != 0 || Controller.RightStickX != 0) {
                 turn = 0;
-                System.out.println("Ji");
                 break;
             }
             Movement.move(0, 0, turn, inverse);
